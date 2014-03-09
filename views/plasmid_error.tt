@@ -1,0 +1,23 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title> Error!</title>
+  <link rel=stylesheet type=text/css href="[% css_url %]">
+</head>
+
+<body>
+    <h1> Plasmid name already exists in the database! They are:</h1>
+    [% FOREACH id=entries.keys %]
+      <p><a href="/plasmid/show/[% id %]">CFS[% id %]</a></p>
+    [% END %]
+
+  <form action="edit" method="post">
+      <table>
+      <tr valign="top">
+          <td align="center" colspan="2"><input id="_submit" name="_submit" type="submit" value="Return" /></td>
+      </tr>
+      </table>
+  </form>
+</body>
+</html>

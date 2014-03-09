@@ -1,0 +1,45 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Hello [% session.user %]!</title>
+  <link rel=stylesheet type=text/css href="[% css_url %]">
+</head>
+<body>
+<h1 class="plasmid">Mass edit the reference field of a batch of records</h1>
+<p> You can edit either/both plasmids or/and strains here. </p>
+<p><em><b>NOTE! </b></em>You have to be the <em><b>Keeper</b></em> of all the entries you want to modify to make this work.</p>
+
+<form action="mass_edit" id="mass_edit" method="post">
+    <div><input id="_submitted" name="_submitted" type="hidden" value="1" /></div>
+    
+<table>
+<tr valign="top">
+    <td><b>CFS number:(please include "CFS_P or CFS_S")</b></td>
+    <td><textarea name="ID" form="mass_edit"></textarea></td>
+</tr>
+</table>
+
+<p> If you don't know CFS numbers, please fill plasmid/strain names seperately in their corresponding fields</p>
+<table>
+<tr valign="top">
+    <td><b>Plasmid names</b></td>
+    <td><textarea name="Plasmid_Names" form="mass_edit"></textarea></td>
+    <td><b>Strain names</b></td>
+    <td><textarea name="Strain_Names" form="mass_edit"></textarea></td>
+</tr>
+</table>
+<table>
+<tr valign="top">
+    <td><b>Change reference field to:</b></td>
+</tr>
+<tr>
+    <td><textarea name="Reference" form="mass_edit"></textarea></td>
+</tr>
+<tr valign="top">
+    <td align="center" colspan="2"><input id="_submit" name="_submit" type="submit" value="Submit" /></td>
+</tr>
+</table>
+</form>
+</body>
+</html>

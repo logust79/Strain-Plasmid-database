@@ -1,0 +1,13 @@
+# This is the configuration file for Antibiotic abbreviation setup.
+# Note that you can't have abbreviation collapse!
+
+ampicillin: 'amp'
+kanamycin: 'kan'
+chloramphenicol: 'cam'
+tetracycline: 'tet'
+tigecycline: 'tig'
+ciprofloxacin: 'cip'
+gentamicin: 'gen'
+chlorhexidine: 'chx'
+chlorpromazine: 'cpz'
+thioridazine: 'tdz'

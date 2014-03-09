@@ -1,0 +1,18 @@
+# This is the configuration file for Species abbreviation setup.
+
+Escherichia coli: 'E. coli'
+Listeria monocytogenes: 'L. monocytogenes'
+Porphyromonas salivosa: 'P. salivosa'
+Porphyromonas cangingivalis: 'P. cangingivalis'
+Porphyromonas gingivalis: 'P. gingivalis'
+Fusobacterium nucleatum: 'F. nucleatum'
+Streptococcus sanguis: 'S. sanguis'
+Haemophilus actinomycetemcomitans: 'H. actinomycetemcomitans'
+Eikenella corrodens: 'E. corrodens'
+Bacteroides fragilis: 'B. fragilis'
+Prevotella intermedia: 'P. intermedia'
+Tanerrella forsynthesis: 'T. forsynthesis'
+Pseudomonas aeruginosa: 'P. aeruginosa'
+Enterococcus hirae: 'E. hirae'
+Staphylococcus aureus: 'S. aureus'
+Klebsiella pneumoniae: 'K. pneumoniae'

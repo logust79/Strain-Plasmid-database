@@ -1,0 +1,22 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel=stylesheet type=text/css href="[% css_url %]">
+</head>
+<body>
+<h2>Login</h2>
+  [% IF err %]<p class=error><strong>Error:</strong> [% err %][% END %]
+  <form action="[% login_url %]" method=post>
+    <dl>
+      <dt>Username:
+      <dd><input type=text name=username>
+      <dt>Password:
+      <dd><input type=password name=password>
+      <dd><input type=submit value=Login>
+      <dd><input type=hidden name=path value=[% path %]>
+    </dl>
+  </form>
+
+</body>
+</html>
