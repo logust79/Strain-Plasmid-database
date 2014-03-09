@@ -1,0 +1,105 @@
+<!doctype html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/plain; charset=UTF-8"/>
+  <title>Hello [% session.user %]!</title>
+  <link rel=stylesheet type=text/css href="[% css_url %]">
+  <style type="text/css">
+      table {
+          border: thin solid black;
+      }
+      td, th {
+          border: thin dotted gray;
+          padding: 5px;
+      }
+  </style>
+  <script src="/javascripts/dragtable.js"></script>
+  <script src="/javascripts/sorttable.js"></script>
+  <script type="text/javascript">
+      var tableToExcel = (function() {
+                          var uri = 'data:application/vnd.ms-excel;base64,'
+                          , template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--><meta http-equiv="content-type" content="text/plain; charset=UTF-8"/></head><body><table>{table}</table></body></html>'
+                          , base64 = function(s) { return window.btoa(unescape(encodeURIComponent(s))) }
+                          , format = function(s, c) { return s.replace(/{(\w+)}/g, function(m, p) { return c[p]; }) }
+                          return function(table, name) {
+                          if (!table.nodeType) table = document.getElementById(table)
+                          var ctx = {worksheet: name || 'Worksheet', table: table.innerHTML}
+                          window.location.href = uri + base64(format(template, ctx))
+                          }
+                          })()
+      </script>
+</head>
+<body class="plasmid">
+<p>
+    <a id="tree" href="[% home %]"><font color="#04B4AE">Home</font></a>&nbsp;&nbsp;
+    
+    [% IF mine %]
+        <a id="tree" href="[% plasmid %]"><font color="#04B4AE">All plasmids</font></a>
+    [% ELSE %]
+        <a id="tree" href="[% my_plasmids %]"><font color="#04B4AE">myPlasmids</font></a>
+    [% END %]&nbsp;&nbsp;
+    <a id="tree" href="[% plasmid_search %]"><font color="#04B4AE">Search</font></a>&nbsp;&nbsp;
+    <a id="tree" href="[% plasmid_add %]"><font color="#04B4AE">Add</font></a>&nbsp;&nbsp;&nbsp;
+    [% IF session.logged_in %]
+    <a id="tree" href="[% p_custom %]"><font color="#04B4AE">Customise your list</font></a>&nbsp;&nbsp;
+    <a id="tree" href="[% logout_url %]"><font color="#8A4B08">log out</font></a>
+    [% ELSE %]
+    <a id="tree" href="[% login_url %]"><font color="#8A4B08">login</font></a>
+    [% END %]
+</p>
+<input type="button" onclick="tableToExcel('plasmid', 'W3C Example Table')" value="Export to Excel">
+<table id="plasmid" class="draggable sortable">
+    <caption> <h2><b>The plasmid list</b></h2></caption>
+    <br>
+    <tr>
+        <th>CFS_P NO.</th>
+        <th>Plasmid Name</th>
+        [% FOREACH key IN display %]
+          [% IF key == 'Temperature' %]
+            <th>&deg;C</th>
+          [% ELSE %]
+            <th>[% key %]</th>
+          [% END %]
+         [% END %]
+        
+    </tr>
+    [% FOREACH row IN entries %]
+        <tr>
+            <td><a href="[% row.href %]">CFS_P[% row.ID %]</a></td>
+            <td>[% row.Name %]</td>
+            [% FOREACH key IN display %]
+              [% IF key == 'Parent' %]
+                <td><a href="[% row.phref %]">[% row.Parent %]</a></td>
+              [% ELSIF key == 'Carriers' %]
+                <td>[% FOREACH car IN row.C.keys.sort %]
+                  <a href="[% row.C.$car %]">[% car %]</a>
+                [% END %]</td>
+              [% ELSIF key == 'Daughters' %]
+                <td>[% FOREACH dau IN row.D.keys.sort %]
+                  <a href="[% row.D.$dau %]">[% dau %]</a>
+                [% END %]</td>
+              [% ELSIF key == 'Map' %]
+                <td>
+                    [% IF row.Map %]
+                        <a href="[% row.Map %]">link</a>
+                    [% END %]
+                </td>
+              [% ELSIF key == 'Sequence' %]
+                <td>
+                    [% IF row.Sequence %]
+                        <a href="[% row.Sequence %]">link</a>
+                    [% END %]
+                </td>
+              [% ELSE %]
+                <td>[% row.$key %]</td>
+              [% END %]
+            [% END %]
+            
+        </tr>
+    [% END %]
+</table>
+
+
+
+</body>
+</html>

@@ -1,0 +1,10 @@
+<!doctype html>
+<html>
+<body>
+<form action="tsted" method="POST" id="tst" enctype="multipart/form-data">
+<input type="file" id="tst" name="tst"><br>
+<input type="text" name="ooo">
+<input type="submit" name="submit value="submit">
+</form>
+</body>
+</html>

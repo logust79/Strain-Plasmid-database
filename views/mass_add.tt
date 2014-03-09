@@ -1,0 +1,104 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Hello [% session.user %]!</title>
+  <link rel=stylesheet type=text/css href="[% css_url %]">
+      <script src="/javascripts/jquery.min.js"></script>
+      <script src="/javascripts/jquery.handsontable.full.js"></script>
+      <link rel="stylesheet" media="screen" href="/css/jquery.handsontable.full.css">
+      <link rel="stylesheet" media="screen" href="/css/samples.css">
+      <script>
+          $(document).ready(function () {
+                            
+                            function createBigData() {
+                            var rows = []
+                            , i
+                            , j;
+                            
+                            var names = "[% entries %]";
+                            var colnames = names.split(" ");
+                            
+                            var first_row = [];
+                            for (j = 0; j < colnames.length; j++) {
+                                first_row.push(colnames[j]);
+                            }
+                            rows.push(first_row);
+                            /*for (i = 0; i < 20; i++) {
+                                rows.push(" ");
+                            }*/
+                            
+                            return rows;
+                            }
+                            function firstRowRenderer(instance, td, row, col, prop, value, cellProperties) {
+                            Handsontable.renderers.TextRenderer.apply(this, arguments);
+                            td.style.fontWeight = 'bold';
+                            td.style.color = 'green';
+                            td.style.background = '#CEC';
+                            }
+                            $("#example1").handsontable({
+                                                        data: createBigData(),
+                                                        rowHeaders: true,
+                                                        colHeaders: true,
+                                                        fixedRowsTop: 1,
+                                                        fixedColumnsLeft: 1,
+                                                        /*colWidths: [55, 80, 80, 80, 80, 80, 80],*/
+                                                        manualColumnResize: true,
+                                                        manualColumnMove: true,
+                                                        minSpareRows: 10,
+                                                        persistentState: true,
+                                                        cells: function (row, col, prop) {
+                                                        var cellProperties = {};
+                                                        if (row === 0) {
+                                                        cellProperties.readOnly = true; //make cell read-only if it is first row
+                                                        }
+                                                        if (row === 0) {
+                                                        cellProperties.renderer = firstRowRenderer; //uses function directly
+                                                        }
+                                                        
+                                                        return cellProperties;
+                                                        }
+                                                        
+                                                        });
+
+                            function bindDumpButton() {
+                            $('body').on('click', 'button[name=dump]', function () {
+                                         var dump = $(this).data('dump');
+                                         var $container = $(dump);
+                                         document.getElementById("data_holder").innerHTML = $container.handsontable('getData');
+                                         
+                                         console.log('data of ' + dump, $container.handsontable('getData'));
+                                         });
+                            }
+                            bindDumpButton();
+                            
+                            
+                            });
+    </script>
+</head>
+<body class="[% type %]">
+    <h2>Batch [% type %]s Add</h2>
+    
+    <p>Columns are draggable to fit your need.</p>
+    
+    
+    <div class="state-loaded example1 alert">State of the table has been restored. <button class="mini reset-state1">Reset table state</button></div>
+    
+
+    <div id="example1" style="width: 800px; height: 300px; overflow: scroll" class="handsontable"></div>
+    <p>
+    <button name="dump" data-dump="#example1" >
+        Dump
+        data before Submit
+    </button>
+    </p>
+        
+        
+    <form action="mass_add" id="mass_add" method="post">
+        <textarea name="data_holder" form="mass_add" id="data_holder" style="display:none;"></textarea>
+        <td align="center" colspan="2"><input id="_submit" name="_submit" type="submit" value="Submit" title="Don't submit before Dump!"/></td>
+    </form>
+
+
+</body>
+</html>

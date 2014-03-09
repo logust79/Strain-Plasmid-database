@@ -1,0 +1,139 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Hello [% session.user %]!</title>
+  <link rel=stylesheet type=text/css href="[% css_url %]">
+</head>
+
+<body class="strain">
+<p>
+    <a href="[% home %]"><font color="#3B170B">Home</font></a>&nbsp;&nbsp;&nbsp;
+    <a href="[% strain %]"><font color="#3B170B">All strains</font></a>
+    <a href="[% my_strains %]"><font color="#3B170B">myStrains</font></a>
+    <a href="[% strain_search %]"><font color="#3B170B">Search</font></a>
+    <a href="[% strain_add %]"><font color="#3B170B">Add</font></a>&nbsp;&nbsp;&nbsp;
+    [% IF session.logged_in %]
+    <a href="[% logout_url %]"><font color="#8A4B08">log out</font></a>
+    [% ELSE %]
+    <a href="[% login_url %]"><font color="#8A4B08">login</font></a>
+    [% END %]
+    
+[% IF allowed %]
+    <form action=[% entries.ID %]/edit method=post class=add-entry>
+        <input type=submit value=Edit entry>
+    </form>
+[% END %]
+</p>
+
+
+<h1 class=plasmid>
+
+[% IF entries.Obsolete %]
+  <del>
+[% END %]
+CFS_S[% entries.ID %]:[% entries.Name %] &nbsp;&nbsp;&nbsp;
+[% IF entries.Obsolete %]
+  </del>
+[% END %]
+
+ <font class=small> 
+ <i>[% species %]</i>&nbsp;&nbsp;&nbsp;
+ [% entries.Temperature %]&deg;C &nbsp;&nbsp;&nbsp;
+   <em>
+   [% IF entries.Resistance.size %]
+    [% FOREACH res IN resistance %]
+      [% res %]&nbsp;&nbsp;
+    [% END %]
+  [% ELSE %]
+    &nbsp;
+  [% END %]
+  </em>
+  <a id="tree" href="[% tree %]">Tree of life</a>
+  </font></h1>
+
+<div id=left_column>
+<p class=topleft>
+
+<p class=topright> <strong>Keeper:</strong> &nbsp; [% entries.Keeper %] &nbsp;&nbsp; <strong>Constructor:</strong> &nbsp; [% entries.Constructor %]<br>
+    <strong> Storing &nbsp; location: </strong> &nbsp; [% entries.Location %]
+</p>
+
+
+
+<p class=Plasmids><strong> Plasmids: </strong> &nbsp;
+[% IF plasmids.size %]
+[% FOREACH key IN plasmids.keys.sort %]
+<a href="[% plasmids.$key %]">[% key %]</a>&nbsp;&nbsp;
+[% END %]
+[% ELSE %]
+&nbsp;
+[% END %]
+</p>
+
+
+<p class=parent><strong> Parent Strain: </strong> &nbsp;
+    [% IF entries.Parent %]
+        <a href="[% entries.phref %]">[% entries.Parent %]</a>
+    [% ELSE %]
+        <font color="grey"> ROOT </font>
+    [% END %]
+
+</p>
+
+<p class=daughters><strong> Daughter strains: </strong> &nbsp;
+[% IF daughters.size %]
+[% FOREACH key IN daughters.keys.sort %]
+<a href="[% daughters.$key %]">[% key %]</a>&nbsp;&nbsp;
+[% END %]
+[% ELSE %]
+&nbsp;
+[% END %]
+</p>
+
+
+<p class=genotype><strong> Genotype: </strong><br>
+  [% IF genotype.size %]
+  <ul id=genotype>
+    [% FOREACH gen IN genotype %]
+      <li> <i>[% gen %]</i>
+    [% END %]
+  </ul>
+  [% ELSE %]
+    &nbsp;
+  [% END %]
+</p>
+<p> <strong> Arrival &nbsp; time: </strong> &nbsp; [% entries.Arrival_time %]
+</p>
+</div>
+
+
+<div id="right_column">
+<p class=reference><strong> Reference: </strong><br>
+  [% entries.Reference %]
+</p>
+<p class="construction"><strong> Construction: </strong><br>
+[% entries.Construction %]
+</p>
+<p class=comment><strong> Comment: </strong><br>
+  [% entries.Comments %]
+</p>
+</div>
+
+ 
+
+<div id=footer>
+ <p>Recorder: [% entries.Recorder %]<br>
+    Recorded at: &nbsp; [% entries.Recording_time %] &nbsp; &nbsp;
+    Last modified at: [% entries.Modified_time %]
+ </p>
+</div>
+
+
+
+
+
+
+
+</body>
+</html>

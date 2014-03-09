@@ -1,0 +1,32 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Hello [% session.user %]!</title>
+        <link rel=stylesheet type=text/css href="[% css_url %]">
+    </head>
+    <body class="[% class %]">
+
+<form action="custom_list" id="custom_list" method="post" >
+
+<table>
+    <tr valign="top">
+        <td> Your chosen fields to display: </td>
+    </tr>
+    <tr valign="top">
+        <td><textarea name="chosen" form="custom_list" id="customise">[% FOREACH key IN display %][% key %]    [% END %]</textarea></td>
+    </tr>
+    <tr valign="top">
+        <td> Available fields: </td>
+    </tr>
+    <tr valign="top">
+        <td><textarea id="customise">[% FOREACH key IN all %][% key %]    [% END %]
+            </textarea></td>
+    </tr>
+    
+</table>
+<input type="submit" value="Submit">
+
+</form>
+</body>
+</html>
