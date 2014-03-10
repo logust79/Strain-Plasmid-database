@@ -2,7 +2,7 @@
 
 use FindBin;
 use lib "$FindBin::Bin/../lib";
-use 5.16.0;
+use 5.18.1;
 use Dancer2;
 use Biolab::UserChecker;
 use Data::Dumper;
@@ -173,6 +173,11 @@ sub get_strain_list {
                 my $dau_id = $dau_record->{ID};
                 $row->{D}->{$d} = uri_for("/strain/$dau_id");
             }
+        }
+        
+        # Turn new line into <br>
+        if ($row->{Comments}){
+            $row->{Comments} =~ s/\n/<br>/;
         }
 
     }
@@ -591,6 +596,7 @@ get qr{/([\d]+)} => sub {
     $record->{Keeper} = ucfirst $record->{Keeper};
     $record->{Constructor} = ucfirst $record->{Constructor};
     $record->{Recorder} = ucfirst $record->{Recorder};
+    $record->{Comments} =~ s/\n/<br>/g;
     my $user = session 'user';
     
     template 'show_plasmid.tt', {
@@ -628,39 +634,7 @@ get '/myPlasmids' => sub {
     
 };
 
-=cut
-any ['get','post'] => '/show/:id' => sub {
-    my $ID = param('id');
-    my $sql = "SELECT * FROM Plasmid WHERE ID = $ID";
-    my $sth = database->prepare($sql);
-    $sth->execute;
-    
-    # This is the plasmid on flat-format from database
-    my $record = $sth->fetchrow_hashref;
-    return 'Record does not exist!' unless $record;
-    
-    my $resistance = Biolab::Antibiotic->abbreviate($record->{Resistance});
-    my $genotype = [split ' ', $record->{Genotype}];
-    
-    # Checking if record keeper is the logged in user.
-    
-    my $allowed = 0;
-    $record->{Keeper} = ucfirst $record->{Keeper};
-    $record->{Recorder} = ucfirst $record->{Recorder};
-    
-    my $parent = database->quick_select('Plasmid',{Name => $record->{Parent}});
-    my $pID = $parent->{ID} || 0;
-    $record->{phref} = uri_for("/plasmid/$pID");
-    
-    template 'show_plasmid.tt', {
-        'msg' => get_flash(),
-        'entries' => $record,
-        'allowed' => $allowed,
-        'resistance' => $resistance,
-        'genotype' => $genotype,
-    }
-};
-=cut
+
 get '/:id/map' => sub {
     my $ID = param('id');
     my $map = database->quick_lookup('Plasmid',{ID => $ID},'Map');
@@ -718,12 +692,14 @@ post '/:id/edited' => sub {
     # Do some formatting...
     my $resistance = join ' ', Biolab::Antibiotic->populate(lc param "Resistance");
     my $genotype = join ' ', (split ' ', param "Genotype");
+    my $other_names = join ' ', (split ' ', param "Other_names");
     my $map = request->upload('map');
     $map = $map ? $map->content : database->quick_lookup('Plasmid',{ID => $ID},'Map');
     
     
     database->quick_update('Plasmid', {ID => $ID},
     {
+        Other_names => $other_names,
         Temperature => (param "Temperature"),
         Obsolete => (param "Obsolete"),
         Copy_number => (lc param "Copy_number"),
@@ -1187,6 +1163,7 @@ get qr{/([\d]+)} => sub {
     $record->{Keeper} = ucfirst $record->{Keeper};
     $record->{Constructor} = ucfirst $record->{Constructor};
     $record->{Recorder} = ucfirst $record->{Recorder};
+    $record->{Comments} =~ s/\n/<br>/g;
     
     template 'show_strain.tt', {
         'msg' => get_flash(),
@@ -1201,45 +1178,6 @@ get qr{/([\d]+)} => sub {
     };
 
 };
-
-=cut
-any ['get','post'] => '/show/:id' => sub {
-    my $ID = param('id');
-    my $sql = "SELECT * FROM Strain WHERE ID = $ID";
-    my $sth = database->prepare($sql);
-    $sth->execute;
-    
-    # This is the plasmid on flat-format from database
-    my $record = $sth->fetchrow_hashref;
-    return 'Record does not exist!' unless $record;
-    
-    my $resistance = Biolab::Antibiotic->abbreviate($record->{Resistance});
-    my $genotype = [split ' ', $record->{Genotype}];
-    my $species = Biolab::Species->abbreviate($record->{Species});
-    
-    $record->{Plasmids} = [split ' ', $record->{Plasmids}];
-    $record->{Daughters} = [split ' ', $record->{Daughters}];
-    
-    # Checking if record keeper is the logged in user.
-    
-    my $allowed = 0;
-    $record->{Keeper} = ucfirst $record->{Keeper};
-    $record->{Recorder} = ucfirst $record->{Recorder};
-    
-    my $parent = database->quick_select('Strain',{Name => $record->{Parent}});
-    my $pID = $parent->{ID} || 0;
-    $record->{phref} = uri_for("/Strain/$pID");
-    
-    template 'show_strain.tt', {
-        'msg' => get_flash(),
-        'entries' => $record,
-        'allowed' => $allowed,
-        'resistance' => $resistance,
-        'genotype' => $genotype,
-        'species' => $species,
-    }
-};
-=cut
  
 post '/:id/edit' => sub {
     if ( not session 'logged_in' ) {
@@ -1339,9 +1277,11 @@ post '/:id/edited' => sub {
     # Do some formatting...
     my $resistance = join ' ', Biolab::Antibiotic->populate(lc param "Resistance");
     my $genotype = join ' ', (split ' ', param "Genotype");
+    my $other_names = join ' ', (split ' ', param "Other_names");
 
     database->quick_update('Strain', {ID => $ID},
     {
+        Other_names => $other_names,
         Temperature => (param "Temperature"),
         Obsolete => (param "Obsolete"),
         Constructor => (param "Constructor"),
@@ -1876,6 +1816,17 @@ any ['get','post'] => '/mass_add' => sub {
 };
 
 
+############# End of strain    #################
+############# Start of primer  $$$$$$$$$$$$$$$$$
+
+prefix '/primer';
+
+get qr{/([\d]+)} => sub {
+    my $ID = splat;
+    my $record = database->quick_select('Primer',{ID => $ID});
+    return 'Record does not exist!' unless $record;
+    
+};
 
 
 

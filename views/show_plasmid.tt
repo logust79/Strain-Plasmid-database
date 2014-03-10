@@ -56,16 +56,16 @@ CFS_P[% entries.ID %]:[% entries.Name %] &nbsp;&nbsp;&nbsp;
 </font>
 </h1>
 <div id=left_column>
-<p class=topleft>
+<p> <strong>Other names:</strong> [% entries.Other_names %]</p>
 
-<p class=topright> <strong>Keeper:</strong> &nbsp; [% entries.Keeper %] &nbsp;&nbsp; 
+<p> <strong>Keeper:</strong>  [% entries.Keeper %] &nbsp;&nbsp;
 <strong>Constructor:</strong> [% entries.Constructor %] <br>
-<strong> Storing location: </strong> &nbsp; [% entries.Location %]
+<strong> Storing location: </strong> [% entries.Location %]
 </p>
 
 
 
-<p class=carriers><strong> Carriers: </strong> &nbsp;
+<p class=carriers><strong> Carriers: </strong>
   [% IF carriers.size %]
     [% FOREACH key IN carriers.keys %]
       <a href="[% carriers.$key %]">[% key %]</a>&nbsp;&nbsp;
@@ -75,7 +75,7 @@ CFS_P[% entries.ID %]:[% entries.Name %] &nbsp;&nbsp;&nbsp;
   [% END %]
 </p>
 
-<p class=parent><strong> Parent&nbsp;Plasmid: </strong> &nbsp; 
+<p class=parent><strong> Parent Plasmid: </strong>
     [% IF entries.Parent %]
         <a href="[% entries.phref %]">[% entries.Parent %]</a>
     [% ELSE %]
@@ -83,7 +83,7 @@ CFS_P[% entries.ID %]:[% entries.Name %] &nbsp;&nbsp;&nbsp;
     [% END %]
 </p>
 
-<p class=daughters><strong> Daughter&nbsp;Plasmids: </strong> &nbsp;
+<p class=daughters><strong> Daughter Plasmids: </strong>
   [% IF daughters.size %]
     [% FOREACH key IN daughters.keys.sort %]
       <a href="[% daughters.$key %]">[% key %]</a>&nbsp;&nbsp;
@@ -106,7 +106,7 @@ CFS_P[% entries.ID %]:[% entries.Name %] &nbsp;&nbsp;&nbsp;
     &nbsp;
   [% END %]
 </p>
-<p> <strong> Arrival &nbsp; time: </strong> &nbsp; [% entries.Arrival_time %]
+<p> <strong> Arrival time: </strong> [% entries.Arrival_time %]
 </p>
 </div>
 

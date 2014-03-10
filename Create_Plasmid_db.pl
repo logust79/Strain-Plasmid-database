@@ -16,6 +16,7 @@ $dbh->do("CREATE TABLE Plasmid(
 
 ID INT PRIMARY KEY AUTO_INCREMENT,
 Name CHAR(20) UNIQUE,
+Other_names TEXT,
 Resistance TEXT,
 Carriers TEXT,
 Size INT(10),

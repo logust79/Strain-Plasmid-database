@@ -53,6 +53,9 @@
         
     
 </td>
+<td></td>
+<td>Other names</td>
+<td><input name="Other_names" type="text" value="[% entries.Other_names %]" /></td>
 
 </tr>
 

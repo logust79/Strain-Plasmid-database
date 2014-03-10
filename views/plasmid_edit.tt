@@ -8,29 +8,7 @@
 <body class="plasmid">
 
 <script type="text/javascript"><!-- hide from old browsers
-function validate (form) {
-    var alertstr = '';
-    var invalid  = 0;
-    var invalid_fields = new Array();
 
-    // ID: standard text, hidden, password, or textarea box
-
-    // Plasmid_Name: standard text, hidden, password, or textarea box
-    var Plasmid_Name = form.elements['Plasmid_Name'].value;
-    if (Plasmid_Name == null || ! Plasmid_Name.match(/^p/)) {
-        alertstr += '- Invalid entry for the "Plasmid Name" field\n';
-        invalid++;
-        invalid_fields.push('Plasmid_Name');
-    }
-    if (invalid > 0 || alertstr != '') {
-        if (! invalid) invalid = 'The following';   // catch for programmer error
-        alert(''+invalid+' error(s) were encountered with your submission:'+'\n\n'
-                +alertstr+'\n'+'Please correct these fields and try again.');
-        return false;
-    }
-    return true;  // all checked ok
-}
-//-->
 
 	<!--
 	function clickMeEvent(obj)
@@ -73,7 +51,9 @@ function validate (form) {
         
     
 </td>
-
+<td></td>
+<td>Other names</td>
+<td><input name="Other_names" type="text" value="[% entries.Other_names %]" /></td>
 </tr>
 
 <tr valign="top">
