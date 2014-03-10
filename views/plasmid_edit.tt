@@ -41,7 +41,7 @@ function validate (form) {
 		}
         else if (obj.innerHTML.match(/Revive/))
 		{
-            obj.innerHTML='<a style="background-color:#D94A38;cursor: pointer;">Sabotage<a>-><b>Plasmid Name: [% entries.PName %]</b><input id="Obsolete" name="Obsolete" type="hidden" value="0" />';
+            obj.innerHTML='<a style="background-color:#D94A38;cursor: pointer;">Sabotage<a>-><b>Plasmid Name: [% entries.Name %]</b><input id="Obsolete" name="Obsolete" type="hidden" value="0" />';
 		}
         else
 		{
@@ -65,9 +65,9 @@ function validate (form) {
   <td>
       <div onclick="clickMeEvent(this)">
           [% IF entries.Obsolete == 1 %]
-          <a style="background-color:green;cursor: pointer;">Revive<a>-><del>Plasmid Name: [% entries.Plasmid_Name %]</del><input id="Obsolete" name="Obsolete" type="hidden" value="1" />
+          <a style="background-color:green;cursor: pointer;">Revive<a>-><del>Plasmid Name: [% entries.Name %]</del><input id="Obsolete" name="Obsolete" type="hidden" value="1" />
           [% ELSE %]
-          <a style="background-color:#D94A38;cursor: pointer;">Sabotage<a>-><b>Plasmid Name: [% entries.Plasmid_Name %]</b><input id="Obsolete" name="Obsolete" type="hidden" value="0" />
+          <a style="background-color:#D94A38;cursor: pointer;">Sabotage<a>-><b>Plasmid Name: [% entries.Name %]</b><input id="Obsolete" name="Obsolete" type="hidden" value="0" />
           [% END %]
     </div>
         
