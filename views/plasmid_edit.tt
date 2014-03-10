@@ -37,11 +37,11 @@ function validate (form) {
 	{
         if (obj.innerHTML.match(/Sabotage/))
 		{
-            obj.innerHTML='<a style="background-color:green;cursor: pointer;">Revive<a>-><del>Plasmid Name: [% entries.Plasmid_Name %]</del><input id="Obsolete" name="Obsolete" type="hidden" value="1" />';
+            obj.innerHTML='<a style="background-color:green;cursor: pointer;">Revive<a>-><del>Plasmid Name: [% entries.Name %]</del><input id="Obsolete" name="Obsolete" type="hidden" value="1" />';
 		}
         else if (obj.innerHTML.match(/Revive/))
 		{
-            obj.innerHTML='<a style="background-color:#D94A38;cursor: pointer;">Sabotage<a>-><b>Plasmid Name: [% entries.Plasmid_Name %]</b><input id="Obsolete" name="Obsolete" type="hidden" value="0" />';
+            obj.innerHTML='<a style="background-color:#D94A38;cursor: pointer;">Sabotage<a>-><b>Plasmid Name: [% entries.Name %]</b><input id="Obsolete" name="Obsolete" type="hidden" value="0" />';
 		}
         else
 		{
