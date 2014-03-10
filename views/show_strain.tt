@@ -53,6 +53,7 @@ CFS_S[% entries.ID %]:[% entries.Name %] &nbsp;&nbsp;&nbsp;
   </font></h1>
 
 <div id=left_column>
+<<<<<<< HEAD
 <p>
     <strong>Other names:</strong> [% entries.Other_names %]
 </p>
@@ -60,6 +61,12 @@ CFS_S[% entries.ID %]:[% entries.Name %] &nbsp;&nbsp;&nbsp;
 <p>
     <strong>Keeper:</strong> [% entries.Keeper %] &nbsp;&nbsp; <strong>Constructor:</strong> [% entries.Constructor %]<br>
     <strong> Storing location: </strong> [% entries.Location %]
+=======
+<p class=topleft>
+
+<p class=topright> <strong>Keeper:</strong> &nbsp; [% entries.Keeper %] &nbsp;&nbsp; <strong>Constructor:</strong> &nbsp; [% entries.Constructor %]<br>
+    <strong> Storing &nbsp; location: </strong> &nbsp; [% entries.Location %]
+>>>>>>> FETCH_HEAD
 </p>
 
 

@@ -53,9 +53,12 @@
         
     
 </td>
+<<<<<<< HEAD
 <td></td>
 <td>Other names</td>
 <td><input name="Other_names" type="text" value="[% entries.Other_names %]" /></td>
+=======
+>>>>>>> FETCH_HEAD
 
 </tr>
 
@@ -135,4 +138,8 @@
 
 
 </body>
+<<<<<<< HEAD
 </html>
+=======
+</html>
+>>>>>>> FETCH_HEAD

@@ -6,7 +6,11 @@ use DBI;
 
 
 
+<<<<<<< HEAD
 my ($dbname, $user, $pwd) = qw/CFSlab Jing thethe/;
+=======
+my ($dbname, $user, $pwd) = qw/CFSlab username password/;
+>>>>>>> FETCH_HEAD
 my $dbh = DBI->connect(
 "dbi:mysql:dbname=$dbname",
 "$user",
