@@ -4,7 +4,8 @@ use warnings;
 use DBI;
 
 
-my ($dbname, $user, $pwd) = qw/CFSlab username password/;
+
+my ($dbname, $user, $pwd) = qw/CFSlab Jing thethe/;
 my $dbh = DBI->connect(
 "dbi:mysql:dbname=$dbname",
 "$user",

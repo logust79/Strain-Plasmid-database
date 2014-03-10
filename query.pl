@@ -2,7 +2,7 @@
 
 use FindBin;
 use lib "$FindBin::Bin/../lib";
-use 5.18.1;
+use 5.16.0;
 use Dancer2;
 use Biolab::UserChecker;
 use Data::Dumper;
