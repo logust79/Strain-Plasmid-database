@@ -12,12 +12,12 @@
       <p><a href="/plasmid/show/[% id %]">CFS[% id %]</a></p>
     [% END %]
 
-  <form action="edit" method="post">
+    <form action="edit" method="post">
       <table>
-      <tr valign="top">
+        <tr valign="top">
           <td align="center" colspan="2"><input id="_submit" name="_submit" type="submit" value="Return" /></td>
-      </tr>
+        </tr>
       </table>
-  </form>
+    </form>
 </body>
 </html>

@@ -6,35 +6,35 @@
   <link rel=stylesheet type=text/css href="[% css_url %]">
 </head>
 <body>
-<h1 class="plasmid">Mass-search the database with CFS IDs or Names</h1>
-<p> You can fill in with IDs (inclusion of CFS_P/S is not required) or names. I am smart enough to tell the difference ;) </p>
+  <h1 class="plasmid">Mass-search the database with CFS IDs or Names</h1>
+  <p> You can fill in with IDs (inclusion of CFS_P/S is not required) or names. I am smart enough to tell the difference ;) </p>
 
-<form action="mass_search" id="mass_search" method="post">
+  <form action="mass_search" id="mass_search" method="post">
     <div><input id="_submitted" name="_submitted" type="hidden" value="1" /></div>
     
-<div id="left_column">
-<table>
-<tr valign="top">
-    <td><b>Fill <font color="brown">Plasmid</font> ID/names in this field</b></td>
-    <td><textarea id="mass_search" name="plasmid" form="mass_search"></textarea></td>
-</tr>
-</table>
-</div>
+    <div id="left_column">
+      <table>
+        <tr valign="top">
+          <td><b>Fill <font color="brown">Plasmid</font> ID/names in this field</b></td>
+          <td><textarea id="mass_search" name="plasmid" form="mass_search"></textarea></td>
+        </tr>
+      </table>
+    </div>
 
-<div id="right_column">
-<table>
-<tr valign="top">
-    <td><b>Fill <font color="brown">Strain</font> ID/names in this field</b></td>
-    <td><textarea id="mass_search" name="strain" form="mass_search"></textarea></td>
-</tr>
-</table>
-</div>
+    <div id="right_column">
+      <table>
+        <tr valign="top">
+          <td><b>Fill <font color="brown">Strain</font> ID/names in this field</b></td>
+          <td><textarea id="mass_search" name="strain" form="mass_search"></textarea></td>
+        </tr>
+      </table>
+    </div>
 
-<table>
-<tr valign="top">
-    <td align="center" colspan="2"><input id="_submit" name="_submit" type="submit" value="Submit" /></td>
-</tr>
-</table>
-</form>
+    <table>
+      <tr valign="top">
+        <td align="center" colspan="2"><input id="_submit" name="_submit" type="submit" value="Submit" /></td>
+      </tr>
+    </table>
+  </form>
 </body>
 </html>

@@ -1,9 +1,9 @@
 <!doctype html>
 <html>
-<head>
-<meta charset="utf-8">
-<link rel=stylesheet type=text/css href="[% css_url %]">
-</head>
+  <head>
+    <meta charset="utf-8">
+    <link rel=stylesheet type=text/css href="[% css_url %]">
+  </head>
 <body>
 <h2>Add User</h2>
   [% IF err %]<p class=error><strong>Error:</strong> [% err %][% END %]

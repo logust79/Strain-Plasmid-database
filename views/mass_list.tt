@@ -29,15 +29,15 @@
 
 </head>
 <body>
-<p>
+  <p>
     <a href="[% home %]"><font color="#0B3B0B">Home</font></a>&nbsp;&nbsp;&nbsp;
     [% IF session.logged_in %]
         <a href="[% logout_url %]"><font color="#8A4B08">log out</font></a>
     [% ELSE %]
         <a href="[% login_url %]"><font color="#8A4B08">login</font></a>
     [% END %]
-</p>
-<table id="strain">
+  </p>
+  <table id="strain">
     <caption> <h2><b>The strain list</b></h2></caption>
     <br>
     <tr>
@@ -76,62 +76,62 @@
         
     </tr>
     [% END %]
-</table>
-<input type="button" onclick="tableToExcel('strain', 'W3C Example Table')" value="Export to Excel">
+  </table>
+  <input type="button" onclick="tableToExcel('strain', 'W3C Example Table')" value="Export to Excel">
 
-<table id="plasmid">
-<caption> <h2><b>The plasmid list</b></h2></caption>
-<br>
-<tr>
-<th>CFS_P NO.</th>
-<th>Plasmid Name</th>
-[% FOREACH key IN p_display %]
-[% IF key == 'Temperature' %]
-<th>&deg;C</th>
-[% ELSE %]
-<th>[% key %]</th>
-[% END %]
-[% END %]
-</tr>
-[% FOREACH row IN plasmids %]
-<tr>
+  <table id="plasmid">
+    <caption> <h2><b>The plasmid list</b></h2></caption>
+    <br>
     <tr>
-        <td><a href="[% row.href %]">CFS_P[% row.ID %]</a></td>
-        <td>[% row.Name %]</td>
-        [% FOREACH key IN p_display %]
-        [% IF key == 'Parent' %]
-        <td><a href="[% row.phref %]">[% row.Parent %]</a></td>
-        [% ELSIF key == 'Carriers' %]
-        <td>[% FOREACH car IN row.C.keys.sort %]
-            <a href="[% row.C.$car %]">[% car %]</a>
-            [% END %]</td>
-        [% ELSIF key == 'Daughters' %]
-        <td>[% FOREACH dau IN row.D.keys.sort %]
-            <a href="[% row.D.$dau %]">[% dau %]</a>
-            [% END %]</td>
-        [% ELSIF key == 'Map' %]
-        <td>
-            [% IF row.Map %]
-            <a href="[% row.Map %]">link</a>
-            [% END %]
-        </td>
-        [% ELSIF key == 'Sequence' %]
-        <td>
-            [% IF row.Sequence %]
-            <a href="[% row.Sequence %]">link</a>
-            [% END %]
-        </td>
+      <th>CFS_P NO.</th>
+      <th>Plasmid Name</th>
+      [% FOREACH key IN p_display %]
+        [% IF key == 'Temperature' %]
+          <th>&deg;C</th>
         [% ELSE %]
-        <td>[% row.$key %]</td>
+          <th>[% key %]</th>
         [% END %]
-        [% END %]
-        
+      [% END %]
     </tr>
-</tr>
-[% END %]
-</table>
+    [% FOREACH row IN plasmids %]
+      <tr>
+        <tr>
+          <td><a href="[% row.href %]">CFS_P[% row.ID %]</a></td>
+          <td>[% row.Name %]</td>
+          [% FOREACH key IN p_display %]
+            [% IF key == 'Parent' %]
+              <td><a href="[% row.phref %]">[% row.Parent %]</a></td>
+            [% ELSIF key == 'Carriers' %]
+              <td>[% FOREACH car IN row.C.keys.sort %]
+                <a href="[% row.C.$car %]">[% car %]</a>
+              [% END %]</td>
+            [% ELSIF key == 'Daughters' %]
+              <td>[% FOREACH dau IN row.D.keys.sort %]
+                <a href="[% row.D.$dau %]">[% dau %]</a>
+              [% END %]</td>
+            [% ELSIF key == 'Map' %]
+              <td>
+              [% IF row.Map %]
+                <a href="[% row.Map %]">link</a>
+              [% END %]
+              </td>
+            [% ELSIF key == 'Sequence' %]
+              <td>
+              [% IF row.Sequence %]
+                <a href="[% row.Sequence %]">link</a>
+              [% END %]
+              </td>
+            [% ELSE %]
+              <td>[% row.$key %]</td>
+            [% END %]
+          [% END %]
+        
+        </tr>
+      </tr>
+    [% END %]
+  </table>
 
-<input type="button" onclick="tableToExcel('plasmid', 'W3C Example Table')" value="Export to Excel">
+  <input type="button" onclick="tableToExcel('plasmid', 'W3C Example Table')" value="Export to Excel">
 
 
 </body>
