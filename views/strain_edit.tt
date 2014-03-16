@@ -53,11 +53,21 @@
                 <td><input name="Other_names" type="text" value="[% entries.Other_names %]" /></td>
                 
             </tr>
+            
             <tr valign="top">
                 <td>Species</td>
                 <td><input id="Species" name="Species" type="text" value="[% entries.Species %]" /></td>
                 <td>Temperature</td>
                 <td><input id="Temperature" name="Temperature" type="text" value="[% entries.Temperature %]" /></td>
+            </tr>
+            <tr>
+                <td><br></td>
+            </tr>
+            <tr valign="top">
+                <td>Isolated from</td>
+                <td><input name="Isolated_from" type="text" value="[% entries.Isolated_from %]" /></td>
+                <td>Geo location</td>
+                <td><input name="Geographic_location" type="text" value="[% entries.Geographic_location %]" /></td>
             </tr>
             <tr>
                 <td><br></td>

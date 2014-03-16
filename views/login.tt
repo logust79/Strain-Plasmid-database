@@ -10,11 +10,11 @@
   <form action="[% login_url %]" method=post>
     <dl>
       <dt>Username:
-      <dd><input type=text name=username>
+      <dd><input type="text" name="username">
       <dt>Password:
-      <dd><input type=password name=password>
-      <dd><input type=submit value=Login>
-      <dd><input type=hidden name=path value=[% path %]>
+      <dd><input type="password" name="password">
+      <dd><input type="submit" value="Login">
+      <dd><input type="hidden" name="path" value="[% path %]">
     </dl>
   </form>
 

@@ -19,6 +19,8 @@
     <tr valign="top">
       <td><b>Plasmid Name</b></td>
       <td><input id="Plasmid_Name" name="Name" type="text" /></td>
+      <td>Other names</td>
+      <td><input name="Other_names" type="text" /></td>
     </tr>
 
     <tr valign="top">

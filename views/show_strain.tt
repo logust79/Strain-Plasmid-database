@@ -51,6 +51,9 @@
       <strong>Other names:</strong> [% entries.Other_names %]
     </p>
     <p>
+      <strong>Isolated from:</strong> [% entries.Isolated_from %]&nbsp;&nbsp;
+      <strong>Geo_location:</strong> [% entries.Geographic_location %]
+    <p>
       <strong>Keeper:</strong> [% entries.Keeper %] &nbsp;&nbsp; <strong>Constructor:</strong> [% entries.Constructor %]<br>
       <strong> Storing location: </strong> [% entries.Location %]
     </p>

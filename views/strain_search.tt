@@ -19,6 +19,20 @@
         <tr valign="top">
             <td><b>Strain Name</b></td>
             <td><input id="Strain_Name" name="Name" type="text" /></td>
+            <td>Other names</td>
+            <td><input name="Other_names" type="text" /></td>
+        </tr>
+        <tr>
+            <td><br></td>
+        </tr>
+        <tr valign="top">
+            <td>Isolated from</td>
+            <td><input name="Isolated_from" type="text" /></td>
+            <td>Geo location</td>
+            <td><input name="Geographic_location" type="text" /></td>
+        </tr>
+        <tr>
+            <td><br></td>
         </tr>
         <tr valign="top">
             <td>Species</td>

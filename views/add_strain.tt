@@ -11,6 +11,9 @@
     
 function Refresh(name){
     var StrainName = document.getElementById("Strain_Name");
+    var Othernames = document.getElementById("Other_names");
+    var Isolated = document.getElementById("Isolated_from");
+    var Geo = document.getElementById("Geographic_location");
     var Temperature = document.getElementById("Temperature");
     var Species = document.getElementById("Species");
     var Plasmids = document.getElementById("Plasmids");
@@ -27,6 +30,9 @@ function Refresh(name){
     
     location.href="/strain/add?ParentName=" + name +
     ";StrainName=" + StrainName.value +
+    ";Othernames=" + Othernames.value +
+    ";Isolated=" + Isolated.value +
+    ";Geo=" + Geo.value +
     ";Temperature=" + Temperature.value +
     ";Plasmids=" + Plasmids.value +
     ";Keeper=" + Keeper.value +
@@ -85,6 +91,17 @@ function validate (form) {
         <tr valign="top">
             <td><b>Strain Name</b></td>
             <td><input id="Strain_Name" name="Strain_Name" type="text" value="[% filled.StrainName %]"/></td>
+            <td>Other names</td>
+            <td><input id="Other_names" name="Other_names" type="text" value="[% filled.Othernames %]"/></td>
+        </tr>
+        <tr valign="top">
+            <td>Isolated from</td>
+            <td><input id="Isolated_from" name="Isolated_from" type="text" value="[% filled.Isolated %]"/></td>
+            <td>Geo location</td>
+            <td><input id="Geographic_location" name="Geographic_location" type="text" value="[%filled.Geo %]"/></td>
+        </tr>
+        <tr>
+            <td><br></td>
         </tr>
         <tr valign="top">
             <td>Parent</td>
@@ -124,6 +141,9 @@ function validate (form) {
             <td>Resistance</td>
             <td><input id="Resistance" name="Resistance" type="text" value="[% resistance %]" /></td>
         </tr>
+        <tr>
+            <td><br></td>
+        </tr>
         <tr valign="top">
             <td>Genotype </td>
             
@@ -132,7 +152,7 @@ function validate (form) {
         
         <tr valign="top">
             <td>Reference</td>
-            <td><textarea id="Reference" name="Reference" form="add_strain">[% filled.Reference %]</textarea></td>
+            <td><textarea id="Reference" name="Reference" form="add_strain">[% filled.Reference or entries.Reference %]</textarea></td>
         </tr>
         
         <tr valign="top">

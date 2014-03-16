@@ -1,7 +1,10 @@
 #!/usr/bin/env perl
 
-use FindBin;
-use lib "$FindBin::Bin/../lib";
+=header
+ This is the primary app to load the web interface.
+
+=cut
+
 use 5.16.0;
 use Dancer2;
 use Biolab::UserChecker;
@@ -10,13 +13,10 @@ use Biolab::Antibiotic;
 use Biolab::Species;
 use DateTime;
 use Dancer2::Plugin::Database;
-# use Biolab::Plasmid;
-use CGI::FormBuilder;
 use Dancer::Logger qw(debug);
 use MIME::Base64;
 
 use Template;
-# set 'database'     => File::Spec->catfile(File::Spec->tmpdir(), 'dancr.db');
 set 'session'      => 'Simple';
 set 'template'     => 'template_toolkit';
 set 'logger'       => 'console';
@@ -28,34 +28,24 @@ set 'environment'  => 'development';
 
 
 
-my ($flash,$requested_path);
-#my @fields = qw/ID Plasmid_Name Temperature Size Copy_number Resistance Keeper Location Carriers Parent Daughters Genotype Arrival_time Reference Comments Obsolete Recorder/;
-
-
+my ($requested_path);
 
 ####### The beginning of all the subs.... #############
-sub set_flash {
-    my $message = shift;
-    
-    $flash = $message;
-}
-
-sub get_flash {
-    
-    my $msg = $flash;
-    $flash = "";
-    
-    return $msg;
-}
 
 sub get_plasmid_list {
+    # This sub is to get back a plasmid list, usually from a search.
+    # It also add links to self/daughters/carriers/parent.
     my %tokens = @_;
     my @test;
+    
     if ($tokens{user}){
+        
+        # Coming from /myPlasmid
         @test = database->quick_select('Plasmid',{Keeper => $tokens{user}, Obsolete => 0});
-    }
-    # Coming from mass_search
-    elsif ($tokens{ids} || $tokens{names}){
+        
+    }elsif ($tokens{ids} || $tokens{names}){
+        
+        # Coming from /mass_search
         if ($tokens{ids}){
             @test = database->quick_select('Plasmid',{ID => $tokens{ids}});
         }
@@ -63,8 +53,10 @@ sub get_plasmid_list {
             my @temp = database->quick_select('Plasmid',{Name => $tokens{names}});
             push @test, @temp;
         }
-    }
-    else{
+        
+    }else{
+        
+        # For displaying all plasmids
         @test = database->quick_select('Plasmid',{Obsolete => 0});
     }
     
@@ -109,6 +101,8 @@ sub get_plasmid_list {
 }
 
 sub get_plasmid_obsolete_list {
+    
+    #This is the junk yard
     my @test = database->quick_select('Plasmid',{Obsolete => 1});
 
     for my $row (@test){
@@ -127,11 +121,20 @@ sub get_plasmid_obsolete_list {
 }
 
 sub get_strain_list {
+    
+    # This sub is to get back a strain list, usually from a search.
+    # It also add links to self/daughters/plasmids/parent.
+    
     my %tokens = @_;
     my @test;
+    
     if ($tokens{user}){
+        
+        # From /myStrain
         @test = database->quick_select('Strain',{Keeper => $tokens{user}, Obsolete => 0});
     }elsif ($tokens{ids} || $tokens{names}){
+        
+        # From /mass_search
         if ($tokens{ids}){
             @test = database->quick_select('Strain',{ID => $tokens{ids}});
         }
@@ -142,8 +145,12 @@ sub get_strain_list {
 
     }
     else{
+        
+        # For displaying all strains.
         @test = database->quick_select('Strain',{Obsolete => 0});
     }
+    
+    # Add some links now
     for my $row (@test){
         my $ID = $row->{ID};
         $row->{href} = uri_for("/strain/$ID");
@@ -174,14 +181,11 @@ sub get_strain_list {
                 $row->{D}->{$d} = uri_for("/strain/$dau_id");
             }
         }
-<<<<<<< HEAD
         
         # Turn new line into <br>
         if ($row->{Comments}){
             $row->{Comments} =~ s/\n/<br>/;
         }
-=======
->>>>>>> FETCH_HEAD
 
     }
     return @test;
@@ -189,6 +193,8 @@ sub get_strain_list {
 }
 
 sub get_strain_obsolete_list {
+    
+    # This is the junk yard
     my @test = database->quick_select('Strain',{Obsolete => 1});
     for my $row (@test){
         my $ID = $row->{ID};
@@ -228,6 +234,12 @@ sub get_max_id {
 }
 
 sub check_parent {
+    
+    # This is to check parent field.
+    #   Is the parent in the database?
+    #   If it is a strain, does your species match with your parent?
+    
+    
     my $temp = shift;
     my %tokens = %$temp;
     
@@ -235,17 +247,28 @@ sub check_parent {
     my $par_name;
     if ($tokens{type} eq 'Plasmid'){
         
+        # Current record is a plasmid
         # If id is passed here, it means this sub is called from 'edit'
         # If id is undef, it means the sub is called from 'add'
         my $return = $tokens{id} ? uri_for("/plasmid/$tokens{id}") : uri_for('/plasmid/add');
         
         my $par_record = database->quick_select('Plasmid', {Name => $tokens{parent}});
+        
         if (!$par_record) {
+            # Parent is not in the database. Let's throw some errors.
+            
             $err .= qq{<p>Parent plasmid: "$tokens{parent}" does not exist!</p>
                 <p>Parent plasmid has to be already in the database before you can modify this entry</p>
                 <p><a href="$return">Return</a></p>
             }
         }else{
+            
+            # Checking is okay. Now correcting the case of parent name,
+            #   so that it matches the parent's record.
+            # For example, the parent's real name is pET22b,
+            #   and you wrote it as pet22b just because you are lazy that day.
+            # So it's better to return pET22b to auto-correct the case-error.
+            
             $par_name = $par_record->{Name};
         }
         
@@ -256,9 +279,17 @@ sub check_parent {
         my $return = $tokens{id} ? uri_for("/strain/$tokens{id}") : uri_for('/strain/add');
         
         my $par_record = database->quick_select('Strain', {Name => $tokens{parent}});
+        
         if ($par_record){
+            
+            # Parent exists
             my $par_species = $par_record->{Species};
+            
             unless ($tokens{species} eq $par_species){
+                
+                # Parent-daughter species don't match up with each other.
+                # Let's throw an error.
+                
                 my $par_ID = $par_record->{ID};
                 my $par_uri = uri_for("/strain/$par_ID");
                 $err .= qq{
@@ -268,8 +299,16 @@ sub check_parent {
                     <p><a href="$return">Return to current entry</a></p>
                 };
             }
+            
+            # Checking complete, no problem so far. Return parent's name.
+            # For example, the parent's real name is pET22b,
+            #   and you wrote it as pet22b just because you are lazy that day.
+            # So it's better to return pET22b to auto-correct the case-error..
+            
             $par_name = $par_record->{Name};
         }else{
+            
+            # Parent record doesn't exist in the database. Throw an error.
             $err .= qq{<p>Parent strain: "$tokens{parent}" does not exist!</p>
                 <p>Parent strain has to be already in the database before you can modify this entry</p>
                 <p><a href="$return">Return</a></p>
@@ -284,6 +323,10 @@ sub check_parent {
 }
 
 sub update_parent {
+    
+    # You add a parent, and it means the parent has a new daughter.
+    # This sub's job is to add the new daughter to the parent's record.
+    
     my $temp = shift;
     my %tokens = %$temp;
     my $cur_record = $tokens{id} ? database->quick_select($tokens{type}, {ID => $tokens{id}}) : undef;
@@ -312,6 +355,10 @@ sub update_parent {
 }
 
 sub draw_tree {
+    
+    # This is to draw the family tree.
+    # It draws ancestors first using sub draw_parent,
+    #   then completes the tree with sub draw_daughter
     my $cur_record = shift;
     my $type = shift;
     my $cur_uri = uri_for("/$type/$cur_record->{ID}");
@@ -322,10 +369,13 @@ sub draw_tree {
     my $content = qq{
         <a href="$cur_uri" title="$uri_title"><font color = blue><b>$cur_record->{Name}</b></font></a>
     };
+    
+    # Draw ancestors first
     my $parent_content = draw_parent($cur_record,$type);
     $parent_content =~ s{(</li></ul>)} {$content\n$1};
     $content = $parent_content;
     
+    # Then draw offspring
     my $daughter_content = draw_daughter($cur_record, $type);
     
     $content =~ s{(</li>)} {$daughter_content$1};
@@ -334,12 +384,23 @@ sub draw_tree {
 }
 
 sub draw_parent {
+    
+    # This sub is to draw parent part of a family tree.
+    # It is only called from 'draw_tree'.
+    # Note, recursive structure applied.
+    
     my $cur_record = shift;
     my $type = shift;
+    
     if (! $cur_record->{Parent}){
+        
+        # Hitting top of the family tree.
+        
         return '<ul><li>
         </li></ul>';
+        
     }else{
+        
         my $content;
         my $par_record = database->quick_select($type,{Name => $cur_record->{Parent}});
         my $cur_uri = uri_for("/$type/$par_record->{ID}");
@@ -358,10 +419,18 @@ sub draw_parent {
 }
 
 sub draw_daughter {
+    
+    # This sub is to draw offspring part of a family tree.
+    # It is only called from 'draw_tree'.
+    
     my $cur_record = shift;
     my $type = shift;
+    
     if (!($cur_record->{Daughters} =~ /\w/)){
+        
+        # Hitting bottom of the line.
         return '';
+        
     }else{
         my $content;
         
@@ -388,6 +457,18 @@ sub draw_daughter {
 }
 
 sub update_daughter_species {
+    
+    # It is not possible to change a strain's species if it has a parent.
+    
+    # The only way to change species is to change it
+    #   from the top record of the family tree, i.e. the 'root' record.
+    
+    # The parent check is done from the route handler.
+    
+    # When the strain modified is a root record,
+    #   all of its offspring will inherit the changed species.
+    # And this sub does that...
+    
     my $root = shift;
     my @daughters = split ' ', $root->{Daughters};
     for my $dau (@daughters){
@@ -400,6 +481,8 @@ sub update_daughter_species {
 
 
 hook before_template => sub {
+    
+    # Defining some commonly used urls in the templates.
     my $tokens = shift;
     
     $tokens->{'css_url'} = request->base . 'css/style.css';
@@ -430,28 +513,10 @@ hook before_template => sub {
     
 };
 
-=cut
-
-hook before => sub {
-    if (!(session 'logged_in') && request->dispatch_path !~ m{^/login}) {
-        # Pass the original path requested along to the handler:
-        $requested_path = request->dispatch_path;
-        return redirect '/login';
-    }
-};
-=cut
-
-
 
 get '/' => sub {
     template '/layouts/main.tt';
 };
-
-
-
-
-
-
 
 
 # Logging in
@@ -482,8 +547,7 @@ any ['get', 'post'] => '/login' => sub {
             session 'logged_in' => true;
             session user => $name;
             session 'start' => time;
-            set_flash('You are logged in.');
-            redirect params->{path} || '/';
+            redirect (params->{path}) || '/';
         }
     }
     # display login form
@@ -497,7 +561,6 @@ any ['get', 'post'] => '/login' => sub {
 # Logging out
 get '/logout' => sub {
     context->destroy_session;
-    set_flash('You are logged out.');
     redirect '/';
 };
 
@@ -550,6 +613,7 @@ any ['get', 'post'] => '/add_user' => sub {
 prefix '/plasmid';
  
 get qr{/([\d]+)} => sub {
+    # This is for displaying a single record of plasmid
 
     my ($ID) = splat;
     
@@ -562,7 +626,14 @@ get qr{/([\d]+)} => sub {
     my $genotype = [split ' ', $record->{Genotype}];
 
     my $parent = database->quick_select('Plasmid', {Name => $record->{Parent}});
+    
+    # All nonexisting records are directed to /0.
+    # But this is almost impossible to have a parent that isn't in the database now
+    
     my $pID = $parent->{ID} || 0;
+    
+    # Adding some urls
+    
     my $map = uri_for("/plasmid/$ID/map");
     my $seq = uri_for("/plasmid/$ID/sequence");
     $record->{phref} = uri_for("/plasmid/$pID");
@@ -591,22 +662,22 @@ get qr{/([\d]+)} => sub {
     
     
     # Checking if record keeper is the logged in user.
+    # If yes, shows the edit button.
     
     my $allowed = (((session 'user') eq $record->{Keeper})
                 or ((session 'user') eq 'logust'))
                 ? 1
                 : 0;
+    
+    # Now do some formatting...
+    
     $record->{Keeper} = ucfirst $record->{Keeper};
     $record->{Constructor} = ucfirst $record->{Constructor};
     $record->{Recorder} = ucfirst $record->{Recorder};
-<<<<<<< HEAD
     $record->{Comments} =~ s/\n/<br>/g;
-=======
->>>>>>> FETCH_HEAD
     my $user = session 'user';
     
     template 'show_plasmid.tt', {
-        'msg' => get_flash(),
         'entries' => $record,
         'allowed' => $allowed,
         'resistance' => $resistance,
@@ -621,12 +692,18 @@ get qr{/([\d]+)} => sub {
 
 get '/myPlasmids' => sub {
     # This is myPlasmids session.
+    # If the user's not logged in, it will display all plasmids
+    
     my $user = session 'user';
+    
+    # Getting the displaying columns:
+    #   Either defaults, or user's p_list
     
     my @defaults = qw/ Resistance Keeper Location Temperature Parent/;
     my $display_fields = database->quick_lookup('users', {name => session 'user'}, 'p_list');
     my @display_fields = $display_fields ? split ',', $display_fields : @defaults;
-
+    
+    # Getting the list
     my @test = get_plasmid_list('user' => $user);
     
     
@@ -640,46 +717,14 @@ get '/myPlasmids' => sub {
     
 };
 
-<<<<<<< HEAD
 
-=======
-=cut
-any ['get','post'] => '/show/:id' => sub {
-    my $ID = param('id');
-    my $sql = "SELECT * FROM Plasmid WHERE ID = $ID";
-    my $sth = database->prepare($sql);
-    $sth->execute;
-    
-    # This is the plasmid on flat-format from database
-    my $record = $sth->fetchrow_hashref;
-    return 'Record does not exist!' unless $record;
-    
-    my $resistance = Biolab::Antibiotic->abbreviate($record->{Resistance});
-    my $genotype = [split ' ', $record->{Genotype}];
-    
-    # Checking if record keeper is the logged in user.
-    
-    my $allowed = 0;
-    $record->{Keeper} = ucfirst $record->{Keeper};
-    $record->{Recorder} = ucfirst $record->{Recorder};
-    
-    my $parent = database->quick_select('Plasmid',{Name => $record->{Parent}});
-    my $pID = $parent->{ID} || 0;
-    $record->{phref} = uri_for("/plasmid/$pID");
-    
-    template 'show_plasmid.tt', {
-        'msg' => get_flash(),
-        'entries' => $record,
-        'allowed' => $allowed,
-        'resistance' => $resistance,
-        'genotype' => $genotype,
-    }
-};
-=cut
->>>>>>> FETCH_HEAD
 get '/:id/map' => sub {
+    
+    # This is to draw plasmid map
     my $ID = param('id');
     my $map = database->quick_lookup('Plasmid',{ID => $ID},'Map');
+    
+    # Since the map is a binary data, has to be converted for web-display
     my $img = encode_base64($map);
     my $return = uri_for("/plasmid/$ID");
     template 'plasmid_map.tt', {
@@ -688,6 +733,9 @@ get '/:id/map' => sub {
     }
 };
 get '/:id/sequence' => sub {
+    # This is to get the plasmid sequence.
+    # Currently it doesn't recognise any particular sequence format.
+    # It shows whatever it was given.
     my $ID = param('id');
     my $seq = database->quick_lookup('Plasmid',{ID => $ID},'Sequence');
     # A single line of sequence?
@@ -696,9 +744,17 @@ get '/:id/sequence' => sub {
 
 post '/:id/edit' => sub {
     
+    # This is to display edit page.
+    
+    # Should have combined with edited.
+    # But I'll keep it this way as it works with no problem.
+    
+    # Check login status
     if ( not session('logged_in') ) {
         send_error("Not logged in", 401);
     }
+    
+    # Get current record for editting.
     my $ID = param "id";
     my $record = database->quick_select('Plasmid',{ID => $ID});
     
@@ -710,10 +766,16 @@ post '/:id/edit' => sub {
 };
 
 post '/:id/edited' => sub {
-    if ( not session 'logged_in' ) {
-        return redirect uri_for ('/');
-    }
+
     my $ID = param('id');
+    
+    if ( not session 'logged_in' ) {
+        
+        # Just in case...
+        $requested_path = uri_for("/plasmid/$ID");
+        return redirect uri_for('/login');
+    }
+
     my $record = database->quick_select('Plasmid' , {ID => $ID});
     my $name = $record->{Name};
     
@@ -734,20 +796,14 @@ post '/:id/edited' => sub {
     # Do some formatting...
     my $resistance = join ' ', Biolab::Antibiotic->populate(lc param "Resistance");
     my $genotype = join ' ', (split ' ', param "Genotype");
-<<<<<<< HEAD
     my $other_names = join ' ', (split ' ', param "Other_names");
-=======
->>>>>>> FETCH_HEAD
     my $map = request->upload('map');
     $map = $map ? $map->content : database->quick_lookup('Plasmid',{ID => $ID},'Map');
     
-    
+    # Do the actual update
     database->quick_update('Plasmid', {ID => $ID},
     {
-<<<<<<< HEAD
         Other_names => $other_names,
-=======
->>>>>>> FETCH_HEAD
         Temperature => (param "Temperature"),
         Obsolete => (param "Obsolete"),
         Copy_number => (lc param "Copy_number"),
@@ -778,16 +834,25 @@ post '/:id/edited' => sub {
 };
 
 any ['get','post'] => '/add' => sub {
+    
+    # Do a login check
     if ( not session 'logged_in' ) {
-        return redirect uri_for ('/');
+
+        $requested_path = uri_for('/plasmid/add');
+        return redirect uri_for ('/login');
     }
     if ( request->method() eq "POST" ) {
+        # Form submitted.
+        
+        # Let's do a login check one more time.
         if ( not session 'logged_in' ) {
-            return redirect uri_for ('/');
+            $requested_path = uri_for('/plasmid/add');
+            return redirect uri_for ('/login');
         }
         my $ID = param "ID";
         my $report;
         
+        # Check if the plasmid already exists.
         my $Plasmid_Name = param "Plasmid_Name";
         my $query = database->quick_select('Plasmid',{Name => $Plasmid_Name});
         if (my $query_id = $query->{ID}){
@@ -807,6 +872,7 @@ any ['get','post'] => '/add' => sub {
         my $genotype = join ' ', (split ' ', param "Genotype");
         my $keeper = (lc param "Keeper") || (session 'user');
         my $arrival = param "Arrival_time";
+        my $other_names = join ' ', (split ' ', param "Other_names");
         my $map = request->upload('Map');
         $arrival !~ /\d+/ and $arrival = DateTime->now->ymd('-');
         
@@ -823,10 +889,11 @@ any ['get','post'] => '/add' => sub {
             update_parent($argu);
         }
 
-        
+        # Do the record insert
         database->quick_insert('Plasmid',
         {
             Name => (param "Plasmid_Name"),
+            Other_names => $other_names,
             Temperature => (param "Temperature"),
             Obsolete => (param "Obsolete"),
             Copy_number => (lc param "Copy_number"),
@@ -847,6 +914,8 @@ any ['get','post'] => '/add' => sub {
             Recorder => (session 'user'),
         },
         );
+        
+        # Display a successful page.
         my $home = uri_for ('/');
         my $added = uri_for ("/plasmid/$ID");
         
@@ -857,53 +926,60 @@ any ['get','post'] => '/add' => sub {
         };
         
     }else{
-    
-    
-    my %filled = params;
+        # Displaying /add page.
+        
+        # Getting the filled information
+        my %filled = params;
+        
+        # Try to prefill some fields if parent is given.
+        my $parent_name = $filled{ParentName};
+        my $parent = {};
+        if ($parent_name) {
+            $parent = database->quick_select('Plasmid',{Name => $parent_name});
+        }
+        
+        # Get the CFS_P ID.
+        # Note the actual ID might be different as shown here,
+        #   as someone else might add a record faster than you.
+        my $ID = get_max_id('Plasmid') + 1;
+        
+        # Blue white is a bit tricky, so I do the math here.
+        my $bw = $filled{'BlueWhite'} || $parent->{Blue_white};
+        
+        # Resistance mapping as always.
+        
+        my $resistance = (lc $filled{Resistance}) || $parent->{Resistance};
+        $resistance = Biolab::Antibiotic->abbreviate($resistance) || [];
+        my $res = join ' ', @$resistance;
+        
+        # Resistance from the database has some weird chars in it... Get rid of them!
+        $res =~ s/[^a-zA-Z0-9 ]*//g;
+        
+        template 'add_plasmid.tt', {
+            "ID" => $ID,
+            "parent" => $parent_name,
+            "entries" => $parent,
+            "filled" => \%filled,
+            "bw" => $bw,
+            "resistance" => $res,
+        };
 
-    my $parent_name = $filled{ParentName};
-    my $parent = {};
-    if ($parent_name) {
-        my $sql = "SELECT * FROM Plasmid where Name=\'$parent_name\'";
-        my $sth = database->prepare($sql);
-        $sth->execute;
-        $parent = $sth->fetchrow_hashref;
-    }
-    
-    # Get the CFS_P ID. There might be a race problem if we have too many users.
-    my $ID = get_max_id('Plasmid') + 1;
-    
-    # Blue white is a bit tricky, so I do the math here.
-    my $bw = $filled{'BlueWhite'} || $parent->{Blue_white};
-    
-    # Resistance mapping as always.
-    
-    my $resistance = (lc $filled{Resistance}) || $parent->{Resistance};
-    $resistance = Biolab::Antibiotic->abbreviate($resistance) || [];
-    my $res = join ' ', @$resistance;
-    
-    # Resistance from the database has some weird chars in it... Get rid of them!
-    $res =~ s/[^a-zA-Z0-9 ]*//g;
-    
-    template 'add_plasmid.tt', {
-        "ID" => $ID,
-        "parent" => $parent_name,
-        "entries" => $parent,
-        "filled" => \%filled,
-        "bw" => $bw,
-        "resistance" => $res,
-    };
     }
     
 };
 
 get '/list' => sub {
+    # This is to get all plasmid as a list
+    
+    # Getting the columns to display
     my @defaults = qw/ Resistance Keeper Location Temperature Parent/;
     my $display_fields = database->quick_lookup('users', {name => session 'user'}, 'p_list');
     my @display_fields = $display_fields ? split ',', $display_fields : @defaults;
     
+    # Get the list
     my @test = get_plasmid_list();
     
+    # Display the list
     template 'plasmid_list.tt', {
         "entries" => \@test,
         'display' => \@display_fields,
@@ -911,16 +987,20 @@ get '/list' => sub {
 };
 
 any ['get','post'] => '/custom_list' => sub {
+    # This is to customise what columns the plasmid list should display
+    # It will push the customised info as p_list into users's table.
     
     # Do some log status check.
     if ( not session 'logged_in' ) {
-        return redirect uri_for ('/');
+        $requested_path = uri_for('/plasmid/add');
+        return redirect uri_for ('/login');
     }
     if ( request->method() eq "POST" ) {
         
         # Do again log status check.
         if ( not session 'logged_in' ) {
-            return redirect uri_for ('/');
+            $requested_path = uri_for('/plasmid/add');
+            return redirect uri_for ('/login');
         }
         
         my @selected = split ' ', param "chosen";
@@ -961,16 +1041,28 @@ any ['get','post'] => '/custom_list' => sub {
 any ['get','post'] => '/search' => sub {
     if ( request->method() eq "POST" ) {
         my %filled = params;
+        
+        # Delete useless keys
         delete $filled{$_} for qw/_submit _submitted/;
+        
+        # Delete empty keys
         for my $key (keys %filled){
             delete $filled{$key} unless $filled{$key};
         }
+        
+        # Do a bit of formatting
         $filled{Resistance} and $filled{Resistance} = join ' ',Biolab::Antibiotic->populate(lc $filled{Resistance});
-        my @likes = qw/Comments Reference Genotype Resistance Location Daughters/;
+        
+        # Format the 'like' fields.
+        my @likes = qw/Other_names Comments Reference Genotype Resistance Location Daughters/;
         for my $like (@likes){
             $filled{$like} and $filled{$like} = {'like' => '%'.$filled{$like}.'%'};
         }
+        
+        # Do the actual search
         my @matches = database->quick_select('Plasmid',{%filled, Obsolete => 0});
+        
+        # Formatting and adding links..
         for my $row (@matches){
             my $ID = $row->{ID};
             $row->{href} = uri_for("/plasmid/$ID");
@@ -1001,22 +1093,26 @@ any ['get','post'] => '/search' => sub {
 
         }
         
+        # Getting list columns to display
+        
         my @defaults = qw/ Resistance Keeper Location Temperature Parent/;
         my $display_fields = database->quick_lookup('users', {name => session 'user'}, 'p_list');
         my @display_fields = $display_fields ? split ',', $display_fields : @defaults;
 
-        
+        # Display the content
         template 'plasmid_list.tt', {
             "display" => \@display_fields,
             "entries" => \@matches,
         };
     }else {
-    
+        # Displaying /search page
         template 'plasmid_search.tt';
     }
 };
 
 get '/obsolete' => sub {
+    # This is the junk yard
+    
     my @defaults = qw/ Resistance Keeper Location Temperature Parent/;
     my $display_fields = database->quick_lookup('users', {name => session 'user'}, 'p_list');
     my @display_fields = $display_fields ? split ',', $display_fields : @defaults;
@@ -1029,22 +1125,34 @@ get '/obsolete' => sub {
 };
 
 any ['get','post'] => '/mass_add' => sub {
+    # This allows entry-add in batch
     
     # Do some log status check.
-    if ( not session 'logged_in' ) {return redirect uri_for ('/');}
+    if ( not session 'logged_in' ) {
+        $requested_path = uri_for('/plasmid/mass_add');
+        return redirect uri_for ('/login');
+    }
     
-    # define fields
-    my @fields = qw/ Name Resistance Parent Size Copy_number Genotype Temperature Blue_white Keeper Arrival_time Constructor Construction Location Reference Comments Sequence/;
+    # Define fields
+    my @fields = qw/ Name Other_names Resistance Parent Size Copy_number Genotype Temperature Blue_white Keeper Arrival_time Constructor Construction Location Reference Comments Sequence/;
     
     if ( request->method() eq "POST" ) {
         # Check again log status.
-        if ( not session 'logged_in' ) {return redirect uri_for ('/');}
+        if ( not session 'logged_in' ) {
+            $requested_path = uri_for('/plasmid/mass_add');
+            return redirect uri_for ('/login');
+        }
         
+        # All errors go here
         my $total_err;
+        
+        # All successes go here
         my $success;
+        
+        # Gather all the data in %all
         my @data = split ',',param "data_holder";
         my %all;
-        # 15 fields.
+        
         my $length = @fields;
         for my $cell (0..($length-1)){
             for (my $i=$cell+$length; $i<@data+$length-1; $i += $length){
@@ -1060,6 +1168,7 @@ any ['get','post'] => '/mass_add' => sub {
 
         
         if (! $all{Name}){
+            # No plasmid name?
             return "Error, no Plasmid Name!";
         }else{
             my @parents;
@@ -1101,7 +1210,7 @@ any ['get','post'] => '/mass_add' => sub {
                 }
                 if ($err){
                     $total_err .= $err;
-                    # Get of this row of records
+                    # Get rid of this row of records
                     for my $key (keys %all){
                         shift @{$all{$key}};
                     }
@@ -1142,6 +1251,7 @@ any ['get','post'] => '/mass_add' => sub {
             
         }
         
+        # Display all the errors and successes
         template 'success.tt', {
             'content' => $total_err.$success,
         };
@@ -1166,11 +1276,15 @@ any ['get','post'] => '/mass_add' => sub {
 prefix '/strain';
 
 get qr{/([\d]+)} => sub {
+    # This is for displaying a single strain record
+    
+    # Getting ID
     my ($ID) = splat;
  
     my $record = database->quick_select('Strain',{ID => $ID});
     return 'Record does not exist!' unless $record;
     
+    # Do some formatting and add some links
     my $resistance = Biolab::Antibiotic->abbreviate($record->{Resistance});
     my $genotype = [split ' ', $record->{Genotype}];
     my $species = Biolab::Species->abbreviate($record->{Species});
@@ -1203,21 +1317,21 @@ get qr{/([\d]+)} => sub {
 
     
     # Checking if record keeper is the logged in user.
+    # If yes, show 'edit' button
     
     my $allowed = (((session 'user') eq $record->{Keeper})
     or ((session 'user') eq 'logust'))
     ? 1
     : 0;
+    
+    # Formatting again
     $record->{Keeper} = ucfirst $record->{Keeper};
     $record->{Constructor} = ucfirst $record->{Constructor};
     $record->{Recorder} = ucfirst $record->{Recorder};
-<<<<<<< HEAD
     $record->{Comments} =~ s/\n/<br>/g;
-=======
->>>>>>> FETCH_HEAD
     
+    # Show the record
     template 'show_strain.tt', {
-        'msg' => get_flash(),
         'entries' => $record,
         'allowed' => $allowed,
         'resistance' => $resistance,
@@ -1229,57 +1343,17 @@ get qr{/([\d]+)} => sub {
     };
 
 };
-<<<<<<< HEAD
-=======
-
-=cut
-any ['get','post'] => '/show/:id' => sub {
-    my $ID = param('id');
-    my $sql = "SELECT * FROM Strain WHERE ID = $ID";
-    my $sth = database->prepare($sql);
-    $sth->execute;
-    
-    # This is the plasmid on flat-format from database
-    my $record = $sth->fetchrow_hashref;
-    return 'Record does not exist!' unless $record;
-    
-    my $resistance = Biolab::Antibiotic->abbreviate($record->{Resistance});
-    my $genotype = [split ' ', $record->{Genotype}];
-    my $species = Biolab::Species->abbreviate($record->{Species});
-    
-    $record->{Plasmids} = [split ' ', $record->{Plasmids}];
-    $record->{Daughters} = [split ' ', $record->{Daughters}];
-    
-    # Checking if record keeper is the logged in user.
-    
-    my $allowed = 0;
-    $record->{Keeper} = ucfirst $record->{Keeper};
-    $record->{Recorder} = ucfirst $record->{Recorder};
-    
-    my $parent = database->quick_select('Strain',{Name => $record->{Parent}});
-    my $pID = $parent->{ID} || 0;
-    $record->{phref} = uri_for("/Strain/$pID");
-    
-    template 'show_strain.tt', {
-        'msg' => get_flash(),
-        'entries' => $record,
-        'allowed' => $allowed,
-        'resistance' => $resistance,
-        'genotype' => $genotype,
-        'species' => $species,
-    }
-};
-=cut
->>>>>>> FETCH_HEAD
  
 post '/:id/edit' => sub {
+    
+    # Check log in status
     if ( not session 'logged_in' ) {
-        return redirect uri_for ('/');
+        send_error("Not logged in", 401);
     }
     my $ID = param 'id';
     my $record = database->quick_select('Strain', {ID => $ID});
     
-    
+    # Show the /edit page
     template 'strain_edit.tt', {
         'entries' => $record,
     };
@@ -1287,6 +1361,8 @@ post '/:id/edit' => sub {
 };
 
 post '/:id/edited' => sub {
+    # Form submitted from /edit
+    # Check log status again
     if ( not session 'logged_in' ) {
         return redirect uri_for ('/');
     }
@@ -1370,17 +1446,11 @@ post '/:id/edited' => sub {
     # Do some formatting...
     my $resistance = join ' ', Biolab::Antibiotic->populate(lc param "Resistance");
     my $genotype = join ' ', (split ' ', param "Genotype");
-<<<<<<< HEAD
     my $other_names = join ' ', (split ' ', param "Other_names");
 
     database->quick_update('Strain', {ID => $ID},
     {
         Other_names => $other_names,
-=======
-
-    database->quick_update('Strain', {ID => $ID},
-    {
->>>>>>> FETCH_HEAD
         Temperature => (param "Temperature"),
         Obsolete => (param "Obsolete"),
         Constructor => (param "Constructor"),
@@ -1395,6 +1465,8 @@ post '/:id/edited' => sub {
         Construction => (param "Construction"),
         Comments => (param "Comments"),
         Resistance => $resistance,
+        Isolated_from => (param "Isolated_from"),
+        Geographic_location => (param "Geographic_location"),
     },
     );
     
@@ -1415,12 +1487,20 @@ post '/:id/edited' => sub {
 };
 
 any ['get','post'] => '/add' => sub {
+    # This is to add a strain entry
+    
+    # Checking log in status
     if ( not session 'logged_in' ) {
-        return redirect uri_for ('/');
+        $requested_path = uri_for('/strain/add');
+        return redirect uri_for ('/login');
     }
     if ( request->method() eq "POST" ) {
+        # Form is submitted
+        
+        # Let's check log status again
         if ( not session 'logged_in' ) {
-            return redirect uri_for ('/');
+            $requested_path = uri_for('/strain/add');
+            return redirect uri_for ('/login');
         }
         my $ID = param "ID";
         my $report;
@@ -1465,6 +1545,8 @@ any ['get','post'] => '/add' => sub {
                 $err .= "<p>$p doesn't exist in the Plasmid database!</p>";
             }
         }
+        
+        # If there's an error, throw it.
         if ($err){
             $err .="<p>Please add the plasmid(s) in the Plasmid database before adding this entry.</p>";
             return qq{
@@ -1472,7 +1554,7 @@ any ['get','post'] => '/add' => sub {
                 <p><a href="$return">Return</a></p>
             };
         }
-        
+        # No error so far...
         # Update plasmids
         for my $p (@plasmids){
             my $p_record = database->quick_select('Plasmid', {Name => $p});
@@ -1492,12 +1574,17 @@ any ['get','post'] => '/add' => sub {
         my $genotype = join ' ', (split ' ', param "Genotype");
         my $keeper = (lc param "Keeper") || (session 'user');
         my $arrival = param "Arrival_time";
+        my $other_names = join ' ', (split ' ', param "Other_names");
         $arrival !~ /\d+/ and $arrival = DateTime->now->ymd('-');
         
+        # Insert the new row into database
         database->quick_insert('Strain',
         {
             ID => $ID,
             Name => (param "Strain_Name"),
+            Other_names => $other_names,
+            Isolated_from => (param "Isolated_from"),
+            Geographic_location => (param "Geographic_location"),
             Temperature => (param "Temperature"),
             Obsolete => (param "Obsolete"),
             Species => $species,
@@ -1515,6 +1602,8 @@ any ['get','post'] => '/add' => sub {
             Recorder => (session 'user'),
         },
         );
+        
+        # Show a success page
         my $home = uri_for ('/');
         my $added = uri_for ("/strain/$ID");
         return qq{
@@ -1525,16 +1614,20 @@ any ['get','post'] => '/add' => sub {
         };
         
     }else{
-    
+        
+        # This is the 'Get' content
+        
+        # Getting filled info
         my %filled = params;
+        
+        # Parent's been filled?
+        # Let's do some automatic fill in some relevant fields.
         
         my $parent_name = $filled{ParentName};
         my $parent = {};
         if ($parent_name) {
-            my $sql = "SELECT * FROM Strain where Name=\'$parent_name\'";
-            my $sth = database->prepare($sql);
-            $sth->execute;
-            $parent = $sth->fetchrow_hashref;
+
+            $parent = database->quick_select('Strain',{Name => $parent_name});
         }
         
         # Get the CFS_S ID.
@@ -1563,10 +1656,14 @@ any ['get','post'] => '/add' => sub {
 };
 
 get '/list' => sub {
+    # This is to list all strains.
+    
+    # Getting columns to display
     my @defaults = qw/ Species Plasmids Resistance Keeper Location Parent/;
     my $display_fields = database->quick_lookup('users', {name => session 'user'}, 's_list');
     my @display_fields = $display_fields ? split ',', $display_fields : @defaults;
-
+    
+    # Getting the actual list
     my @test = get_strain_list();
     template 'strain_list.tt', {
         "entries" => \@test,
@@ -1575,12 +1672,18 @@ get '/list' => sub {
 };
 
 get '/myStrains' => sub {
+    
+    # This is to display a list of strains kept by the user.
+    # If not logged in, then show all the strains.
+    
     my $user = session 'user';
     
+    # Getting the columns to display
     my @defaults = qw/ Species Plasmids Resistance Keeper Location Parent/;
     my $display_fields = database->quick_lookup('users', {name => session 'user'}, 's_list');
     my @display_fields = $display_fields ? split ',', $display_fields : @defaults;
     
+    # Getting the actual list
     my @test = get_strain_list('user' => $user);
     template 'strain_list.tt', {
     "entries" => \@test,
@@ -1591,16 +1694,20 @@ get '/myStrains' => sub {
 };
 
 any ['get','post'] => '/custom_list' => sub {
+    # This is to customise what columns the plasmid list should display
+    # It will push the customised info as p_list into users's table.
     
     # Do some log status check.
     if ( not session 'logged_in' ) {
-        return redirect uri_for ('/');
+        $requested_path = uri_for('/strain/custom_list');
+        return redirect uri_for ('/login');
     }
     if ( request->method() eq "POST" ) {
 
         # Do again log status check.
         if ( not session 'logged_in' ) {
-            return redirect uri_for ('/');
+            $requested_path = uri_for('/strain/custom_list');
+            return redirect uri_for ('/login');
         }
         
         my @selected = split ' ', param "chosen";
@@ -1638,19 +1745,33 @@ any ['get','post'] => '/custom_list' => sub {
 };
 
 any ['get','post'] => '/search' => sub {
+    # This is to search for a strain.
+    
     if ( request->method() eq "POST" ) {
+        
+        # Getting all the filled info
         my %filled = params;
+        
+        # Get rid of useless keys and empty keys
         delete $filled{$_} for qw/_submit _submitted/;
         for my $key (keys %filled){
             delete $filled{$key} unless $filled{$key};
         }
+        
+        # Do a bit of formatting
         $filled{Resistance} and $filled{Resistance} = join ' ',Biolab::Antibiotic->populate(lc $filled{Resistance});
         $filled{Species} and $filled{Species} = Biolab::Species->populate(ucfirst $filled{Species});
-        my @likes = qw/Comments Reference Genotype Resistance Location Daughters Species Plasmids/;
+        
+        # Formatting the 'like' fields.
+        my @likes = qw/Other_names Isolated_from Geographic_location Comments Reference Genotype Resistance Location Daughters Species Plasmids/;
         for my $like (@likes){
             $filled{$like} and $filled{$like} = {'like' => '%'.$filled{$like}.'%'};
         }
+        
+        # The actual search
         my @matches = database->quick_select('Strain',{%filled, Obsolete => 0});
+        
+        # Do some formatting and add some links
         for my $row (@matches){
             my $ID = $row->{ID};
             $row->{href} = uri_for("/strain/$ID");
@@ -1682,6 +1803,8 @@ any ['get','post'] => '/search' => sub {
 
         }
         
+        # Getting columns to display
+        
         my @defaults = qw/ Species Plasmids Resistance Keeper Location Parent/;
         my $display_fields = database->quick_lookup('users', {name => session 'user'}, 's_list');
         my @display_fields = $display_fields ? split ',', $display_fields : @defaults;
@@ -1698,6 +1821,9 @@ any ['get','post'] => '/search' => sub {
 };
 
 get '/obsolete' => sub {
+    
+    # This is the junk yard
+    
     my @defaults = qw/ Species Plasmids Resistance Keeper Location Parent/;
     my $display_fields = database->quick_lookup('users', {name => session 'user'}, 's_list');
     my @display_fields = $display_fields ? split ',', $display_fields : @defaults;
@@ -1710,19 +1836,34 @@ get '/obsolete' => sub {
 };
 
 any ['get','post'] => '/mass_add' => sub {
-    # Do some log status check.
-    if ( not session 'logged_in' ) {return redirect uri_for ('/');}
+    # Do a batch add in one go
     
-    my @fields = qw/ Name Species Parent Plasmids Genotype Resistance Temperature Keeper Arrival_time Constructor Construction Location Reference Comments Sequence/;
+    # Do some log status check.
+    if ( not session 'logged_in' ) {
+        $requested_path = uri_for('/strain/mass_add');
+        return redirect uri_for('/login');
+    }
+    
+    # These are all the fields to display on the page
+    my @fields = qw/ Name Other_names Isolated_from Geographic_location Species Parent Plasmids Genotype Resistance Temperature Keeper Arrival_time Constructor Construction Location Reference Comments Sequence/;
     
     if ( request->method() eq "POST" ) {
         # Check again log status.
-        if ( not session 'logged_in' ) {return redirect uri_for ('/');}
+        if ( not session 'logged_in' ) {
+            $requested_path = uri_for('/strain/mass_add');
+            return redirect uri_for('/login');
+        }
+        
+        # All the errors come here
         my $total_err;
+        
+        # All the success entries come here
         my $success;
+        
+        # All the data are stored in %all
         my @data = split ',',param "data_holder";
         my %all;
-        # 16 fields.
+        
         for my $cell (0..(@fields-1)){
             for (my $i=$cell+@fields; $i<@data+@fields-1; $i += @fields){
                 push @{$all{$data[$cell]}}, $data[$i];
@@ -1915,21 +2056,9 @@ any ['get','post'] => '/mass_add' => sub {
 };
 
 
-<<<<<<< HEAD
 ############# End of strain    #################
-############# Start of primer  $$$$$$$$$$$$$$$$$
 
-prefix '/primer';
-
-get qr{/([\d]+)} => sub {
-    my $ID = splat;
-    my $record = database->quick_select('Primer',{ID => $ID});
-    return 'Record does not exist!' unless $record;
-    
-};
-=======
->>>>>>> FETCH_HEAD
-
+############ Start of everything else ##########
 
 
 
@@ -1940,7 +2069,8 @@ any ['get','post'] => '/mass_edit' => sub {
     
     # Check log in status
     if ( not session 'logged_in' ) {
-        return redirect uri_for ('/');
+        $requested_path = uri_for('/mass_edit');
+        return redirect uri_for('/login');
     }
     
     # After submission, do the update!
@@ -1951,7 +2081,8 @@ any ['get','post'] => '/mass_edit' => sub {
         
         # Check log in status again
         if ( not session 'logged_in' ) {
-            return redirect uri_for ('/');
+            $requested_path = uri_for('/mass_edit');
+            return redirect uri_for('/login');
         }
         
         my @IDs = split ' ', param "ID";
@@ -2077,10 +2208,12 @@ any ['get','post'] => '/mass_edit' => sub {
 };
 
 any ['get','post'] => '/change_keeper' => sub {
-
+    # This is to change keeper field, like someone's leaving the lab.
+    
     # Check if logged in..
     if ( not session 'logged_in' ) {
-        return redirect uri_for ('/');
+        $requested_path = uri_for('/change_keeper');
+        return redirect uri_for('/login');
     }
     
     
@@ -2089,7 +2222,8 @@ any ['get','post'] => '/change_keeper' => sub {
         
         # Check log in status again...
         if ( not session 'logged_in' ) {
-            return redirect uri_for ('/');
+            $requested_path = uri_for('/change_keeper');
+            return redirect uri_for('/login');
         }
         
         my $return = uri_for ('/change_keeper');
@@ -2138,6 +2272,8 @@ any ['get','post'] => '/change_keeper' => sub {
 };
 
 any ['get','post'] => '/tree/:id' => sub {
+    # This is to display the family trees of the id
+    
     # Note the $id contains P_ or S_ information
     my $token = param "id";
     my ($type, $ID) = ($token =~ /^(\w)_(\d+)/);
@@ -2160,7 +2296,8 @@ any ['get','post'] => '/mass_search' => sub {
     
     # After submission, do the search!
     if ( request->method() eq "POST" ) {
-
+        
+        # Getting the columns to display
         my @s_defaults = qw/ Species Plasmids Resistance Keeper Location Parent/;
         my $s_display_fields = database->quick_lookup('users', {name => session 'user'}, 's_list');
         my @s_display_fields = $s_display_fields ? split ',', $s_display_fields : @s_defaults;

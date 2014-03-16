@@ -1,16 +1,13 @@
 
-use 5.16.0;
+
 use strict;
 use warnings;
 use DBI;
 
 
 
-<<<<<<< HEAD
+
 my ($dbname, $user, $pwd) = qw/CFSlab Jing thethe/;
-=======
-my ($dbname, $user, $pwd) = qw/CFSlab username password/;
->>>>>>> FETCH_HEAD
 my $dbh = DBI->connect(
 "dbi:mysql:dbname=$dbname",
 "$user",
@@ -21,7 +18,10 @@ $dbh->do("DROP TABLE IF EXISTS Strain");
 $dbh->do("CREATE TABLE Strain(
 ID INT PRIMARY KEY AUTO_INCREMENT,
 Name CHAR(20) UNIQUE,
+Other_names TEXT,
 Species VARCHAR,
+Isolated_from TEXT,
+Geographic_location TEXT,
 Resistance TEXT,
 Plasmids TEXT,
 Parent CHAR(20),

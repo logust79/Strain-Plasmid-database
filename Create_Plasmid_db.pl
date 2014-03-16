@@ -1,15 +1,12 @@
-use 5.16.0;
+
 use strict;
 use warnings;
 use DBI;
 
 
-<<<<<<< HEAD
+
 
 my ($dbname, $user, $pwd) = qw/CFSlab Jing thethe/;
-=======
-my ($dbname, $user, $pwd) = qw/CFSlab username password/;
->>>>>>> FETCH_HEAD
 my $dbh = DBI->connect(
 "dbi:mysql:dbname=$dbname",
 "$user",
@@ -21,10 +18,7 @@ $dbh->do("CREATE TABLE Plasmid(
 
 ID INT PRIMARY KEY AUTO_INCREMENT,
 Name CHAR(20) UNIQUE,
-<<<<<<< HEAD
 Other_names TEXT,
-=======
->>>>>>> FETCH_HEAD
 Resistance TEXT,
 Carriers TEXT,
 Size INT(10),

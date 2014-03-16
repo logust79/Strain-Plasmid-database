@@ -11,6 +11,7 @@
     
 function Refresh(name){
     var PlasmidName = document.getElementById("Plasmid_Name");
+    var Othernames = document.getElementById("Other_names");
     var Temperature = document.getElementById("Temperature");
     var CopyNumber = document.getElementById("Copy_number");
     var Size = document.getElementById("Size");
@@ -29,6 +30,7 @@ function Refresh(name){
     
     location.href="/plasmid/add?ParentName=" + name +
     ";PlasmidName=" + PlasmidName.value +
+    ";Othernames=" + Othernames.value +
     ";Temperature=" + Temperature.value +
     ";CopyNumber=" + CopyNumber.value +
     ";Size=" + Size.value +
@@ -90,6 +92,8 @@ function validate (form) {
         <tr valign="top">
             <td><b>Plasmid Name</b></td>
             <td><input id="Plasmid_Name" name="Plasmid_Name" type="text" value="[% filled.PlasmidName %]"/></td>
+            <td><b>Other names</b></td>
+            <td><input id="Other_names" name="Other_names" type="text" value="[% filled.Othernames %]"/></td>
         </tr>
         <tr valign="top">
             <td>Parent</td>
@@ -145,7 +149,7 @@ function validate (form) {
         
         <tr valign="top">
             <td>Reference</td>
-            <td><textarea id="Reference" name="Reference" form="add_plasmid">[% filled.Reference %]</textarea></td>
+            <td><textarea id="Reference" name="Reference" form="add_plasmid">[% filled.Reference or entries.Reference %]</textarea></td>
         </tr>
         
         <tr valign="top">
