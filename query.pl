@@ -1300,10 +1300,12 @@ get qr{/([\d]+)} => sub {
     $record->{Constructor} = ucfirst $record->{Constructor};
     $record->{Recorder} = ucfirst $record->{Recorder};
     $record->{Comments} =~ s/\n/<br>/g;
+    $acc_url = 'http://www.ncbi.nlm.nih.gov/nuccore/'.$record->{Accession_NO};
     
     # Show the record
     template 'show_strain.tt', {
         'entries' => $record,
+        'acc_url' => $acc_url,
         'allowed' => $allowed,
         'resistance' => $resistance,
         'genotype' => $genotype,

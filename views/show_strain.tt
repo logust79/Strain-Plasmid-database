@@ -58,7 +58,7 @@
                 [% END %]
             </td>
             <td><strong>Accession Number:</strong></td>
-            <td><a href="[% ahref %]">[% entries.Accession_NO %]</a></td>
+            <td><a href="[% acc_url %]">[% entries.Accession_NO %]</a></td>
         </tr>
         <tr valign="top">
             <td height="35"><strong>Isolated from:</strong></td>
