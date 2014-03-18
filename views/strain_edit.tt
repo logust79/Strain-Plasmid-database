@@ -38,7 +38,7 @@
         <table>
             
             
-            <tr valign="top">
+            <tr>
                 <td>
                     <div onclick="clickMeEvent(this)">
                         [% IF entries.Obsolete == 1 %]
@@ -48,22 +48,24 @@
                                 [% END %]
                     </div>
                 </td>
-                <td></td>
-                <td>Other names</td>
-                <td><input name="Other_names" type="text" value="[% entries.Other_names %]" /></td>
                 
             </tr>
             
-            <tr valign="top">
-                <td>Species</td>
+            <tr>
+                <td height="30">Species</td>
                 <td><input id="Species" name="Species" type="text" value="[% entries.Species %]" /></td>
                 <td>Temperature</td>
                 <td><input id="Temperature" name="Temperature" type="text" value="[% entries.Temperature %]" /></td>
             </tr>
             <tr>
+                <td>Accession number</td>
+                <td><input name="Accession_NO" type="text" value="[% entries.Accession_NO %]"/></td>
+                <td>Other names</td>
+                <td><input name="Other_names" type="text" value="[% entries.Other_names %]" /></td>
+            <tr>
                 <td><br></td>
             </tr>
-            <tr valign="top">
+            <tr>
                 <td>Isolated from</td>
                 <td><input name="Isolated_from" type="text" value="[% entries.Isolated_from %]" /></td>
                 <td>Geo location</td>
@@ -73,13 +75,13 @@
                 <td><br></td>
             </tr>
             
-            <tr valign="top">
-                <td>Keeper</td>
+            <tr>
+                <td height="30">Keeper</td>
                 <td><input id="Keeper" name="Keeper" type="text" value="[% entries.Keeper %]" /></td>
                 <td>Constructor</td>
                 <td><input id="Constructor" name="Constructor" type="text" value="[% entries.Constructor %]" /></td>
             </tr>
-            <tr valign="top">
+            <tr>
                 <td>Location</td>
                 <td><input id="Location" name="Location" type="text" value="[% entries.Location %]" /></td>
                 <td>Arrival Time</td>
@@ -88,7 +90,7 @@
             <tr>
                 <td><br></td>
             </tr>
-            <tr valign="top">
+            <tr>
                 <td>Parent</td>
                 <td><input id="Parent" name="Parent" type="text" value="[% entries.Parent %]" /></td>
             </tr>
@@ -103,12 +105,12 @@
             </tr>
             
             
-            <tr valign="top">
+            <tr>
                 <td>Genotype </td>
                 
                 <td><textarea id="Genotype" name="Genotype" form="strain_edit">[% entries.Genotype %]</textarea></td>
             </tr>
-            <tr valign="top">
+            <tr>
                 <td>Resistance</td>
                 <td><textarea id="Resistance" name="Resistance" form="strain_edit">[% entries.Resistance %]</textarea></td>
             </tr>
@@ -117,15 +119,15 @@
                 <td><br></td>
             </tr>
             
-            <tr valign="top">
+            <tr>
                 <td>Reference</td>
                 <td><textarea id="Reference" name="Reference" form="strain_edit">[% entries.Reference %]</textarea></td>
             </tr>
-            <tr valign="top">
+            <tr>
                 <td>Construction</td>
                 <td><textarea id="Construction" name="Construction" form="strain_edit">[% entries.Construction %]</textarea></td>
             </tr>
-            <tr valign="top">
+            <tr>
                 <td>Comments</td>
                 <td><textarea id="Comments" name="Comments" form="strain_edit">[% entries.Comments %]</textarea></td>
             </tr>

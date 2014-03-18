@@ -51,49 +51,84 @@
     </font>
   </h1>
   <div id=left_column>
-    <p> <strong>Other names:</strong> [% entries.Other_names %]</p>
-    <p> <strong>Keeper:</strong>  [% entries.Keeper %] &nbsp;&nbsp;
-        <strong>Constructor:</strong> [% entries.Constructor %] <br>
-        <strong> Storing location: </strong> [% entries.Location %]
-    </p>
-    <p class=carriers><strong> Carriers: </strong>
-      [% IF carriers.size %]
-        [% FOREACH key IN carriers.keys %]
-          <a href="[% carriers.$key %]">[% key %]</a>&nbsp;&nbsp;
-        [% END %]
-      [% ELSE %]
-        &nbsp;
-      [% END %]
-    </p>
-    <p class=parent><strong> Parent Plasmid: </strong>
-      [% IF entries.Parent %]
-        <a href="[% entries.phref %]">[% entries.Parent %]</a>
-      [% ELSE %]
-        <font color="grey"> ROOT </font>
-      [% END %]
-    </p>
-    <p class=daughters><strong> Daughter Plasmids: </strong>
-      [% IF daughters.size %]
-        [% FOREACH key IN daughters.keys.sort %]
-          <a href="[% daughters.$key %]">[% key %]</a>&nbsp;&nbsp;
-        [% END %]
-      [% ELSE %]
-        &nbsp;
-      [% END %]
-    </p>
-    <p class=genotype><strong> Genotype: </strong><br>
-      [% IF genotype.size %]
-        <ul id=genotype>
-        [% FOREACH gen IN genotype %]
-          <li> <i> [% gen %] </i>
-        [% END %]
-        </ul>
-      [% ELSE %]
-        &nbsp;
-      [% END %]
-    </p>
-    <p> <strong> Arrival time: </strong> [% entries.Arrival_time %]
-    </p>
+      <p>
+      <table>
+          <tr valign="top">
+              <td height="25"><strong>Other names:</strong></td>
+              <td>[% IF entries.Other_names %]
+                    [% entries.Other_names %]
+                  [% ELSE %]                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  [% END %]
+              </td>
+              <td><strong>Accession number: </strong> </td>
+              <td><a href="[% acc_url %]">[% entries.Accession_NO %]</a></td>
+          </tr>
+          <tr valign="top">
+              <td height="25"><strong>Keeper:</strong></td>
+              <td>[% entries.Keeper %]</td>
+              <td><strong>Constructor:</strong></td>
+              <td>[% entries.Constructor %]</td>
+          </tr>
+          </table>
+          <table>
+          <tr valign="top">
+              <td height="35"><strong> Storing location: </strong></td>
+              <td>[% entries.Location %]</td>
+          </tr>
+          <tr valign="top">
+              <td height="25"><strong> Carriers: </strong></td>
+              <td>
+                  [% IF carriers.size %]
+                  [% FOREACH key IN carriers.keys %]
+                  <a href="[% carriers.$key %]">[% key %]</a>
+                  [% END %]
+                  [% ELSE %]
+                  &nbsp;
+                  [% END %]
+              </td>
+          </tr>
+          <tr valign="top">
+              <td height="25"><strong> Parent Plasmid: </strong></td>
+              <td>
+                  [% IF entries.Parent %]
+                  <a href="[% entries.phref %]">[% entries.Parent %]</a>
+                  [% ELSE %]
+                  <font color="grey"> ROOT </font>
+                  [% END %]
+              </td>
+          </tr>
+          <tr valign="top">
+              <td height="35"><strong> Daughter Plasmids: </strong></td>
+              <td>
+                  [% IF daughters.size %]
+                  [% FOREACH key IN daughters.keys.sort %]
+                  <a href="[% daughters.$key %]">[% key %]</a>
+                  [% END %]
+                  [% ELSE %]
+                  &nbsp;
+                  [% END %]
+              </td>
+          </tr>
+          <tr valign="top">
+              <td><strong> Genotype: </strong></td>
+          </tr>
+          <tr valign="top"><td>
+              [% IF genotype.size %]
+              <ul id=genotype>
+                  [% FOREACH gen IN genotype %]
+                  <li> <i> [% gen %] </i>
+                      [% END %]
+                      </ul>
+              [% ELSE %]
+              &nbsp;
+              [% END %]
+          </td></tr>
+          <tr valign="top">
+              <td><strong> Arrival time: </strong></td>
+              <td>[% entries.Arrival_time %]</td>
+          </tr>
+      </table>
+      </p>
   </div>
   <div id=right_column>
     <p class="reference"><strong> Reference: </strong><br>

@@ -12,6 +12,7 @@
 function Refresh(name){
     var StrainName = document.getElementById("Strain_Name");
     var Othernames = document.getElementById("Other_names");
+    var AccessionNO = document.getElementById("Accession_NO");
     var Isolated = document.getElementById("Isolated_from");
     var Geo = document.getElementById("Geographic_location");
     var Temperature = document.getElementById("Temperature");
@@ -31,6 +32,7 @@ function Refresh(name){
     location.href="/strain/add?ParentName=" + name +
     ";StrainName=" + StrainName.value +
     ";Othernames=" + Othernames.value +
+    ";AccessionNO=" + AccessionNO.value +
     ";Isolated=" + Isolated.value +
     ";Geo=" + Geo.value +
     ";Temperature=" + Temperature.value +
@@ -88,27 +90,29 @@ function validate (form) {
     <div><input id="_submitted" name="_submitted" type="hidden" value="1" /></div>
     <input name="ID" type="hidden" value=[% ID %] />
     <table>
-        <tr valign="top">
+        <tr>
             <td><b>Strain Name</b></td>
             <td><input id="Strain_Name" name="Strain_Name" type="text" value="[% filled.StrainName %]"/></td>
             <td>Other names</td>
             <td><input id="Other_names" name="Other_names" type="text" value="[% filled.Othernames %]"/></td>
         </tr>
-        <tr valign="top">
+        <tr>
             <td>Isolated from</td>
             <td><input id="Isolated_from" name="Isolated_from" type="text" value="[% filled.Isolated %]"/></td>
             <td>Geo location</td>
-            <td><input id="Geographic_location" name="Geographic_location" type="text" value="[%filled.Geo %]"/></td>
+            <td><input id="Geographic_location" name="Geographic_location" type="text" value="[% filled.Geo %]"/></td>
         </tr>
         <tr>
             <td><br></td>
         </tr>
-        <tr valign="top">
+        <tr>
             <td>Parent</td>
-            <td><input id="Parent" name="Parent" [B] type="text" value="[% parent %]"onChange="Refresh(this.value)"[/B]/></td>
+            <td><input id="Parent" name="Parent" type="text" value="[% parent %]"onChange="Refresh(this.value)"/></td>
+            <td>Accession NO</td>
+            <td><input id="Accession_NO" name="Accession_NO" type="text" value="[% filled.AccessionNO %]"/></td>
         </tr>
 
-        <tr valign="top">
+        <tr>
             <td>Species</td>
             <td><input id="Species" name="Species" type="text" value="[% entries.Species or filled.Species %]" /></td>
             <td>Temperature</td>
@@ -117,13 +121,13 @@ function validate (form) {
         <tr>
             <td><br></td>
         </tr>
-        <tr valign="top">
+        <tr>
             <td>Keeper</td>
             <td><input id="Keeper" name="Keeper" type="text" value="[% filled.Keeper or session.user %]" /></td>
             <td>Constructor</td>
             <td><input id="Constructor" name="Constructor" type="text" value="[% filled.Constructor %]" /></td>
         </tr>
-        <tr valign="top">
+        <tr>
             <td>Location</td>
             <td><input id="Location" name="Location" type="text" value="[% filled.Location %]"/></td>
             <td>Arrival Time</td>
@@ -132,40 +136,40 @@ function validate (form) {
         <tr>
             <td><br></td>
         </tr>
-        <tr valign="top">
+        <tr>
             <td>Plasmids</td>
             <td><input id="Plasmids" name="Plasmids" type="text" value="[% filled.Plasmids or entries.Plasmids %]"</td>
         </tr>
         
-        <tr valign="top">
+        <tr>
             <td>Resistance</td>
             <td><input id="Resistance" name="Resistance" type="text" value="[% resistance %]" /></td>
         </tr>
         <tr>
             <td><br></td>
         </tr>
-        <tr valign="top">
+        <tr>
             <td>Genotype </td>
             
             <td><textarea id="Genotype" name="Genotype" form="add_strain">[% filled.Genotype or entries.Genotype %]</textarea></td>
         </tr>
         
-        <tr valign="top">
+        <tr>
             <td>Reference</td>
             <td><textarea id="Reference" name="Reference" form="add_strain">[% filled.Reference or entries.Reference %]</textarea></td>
         </tr>
         
-        <tr valign="top">
+        <tr>
             <td>Construction</td>
             <td><textarea id="Construction" name="Construction" form="add_strain">[% filled.Construction %]</textarea></td>
         </tr>
 
-        <tr valign="top">
+        <tr>
             <td>Comments</td>
             <td><textarea id="Comments" name="Comments" form="add_strain">[% filled.Comments %]</textarea></td>
         </tr>
         
-        <tr valign="top">
+        <tr>
             <td>Obsolete</td>
             <td><input id="Obsolete" name="Obsolete" type="radio" value="0" checked="checked">no
             <input id="Obsolete" name="Obsolete" type="radio" value="1">yes
@@ -173,7 +177,7 @@ function validate (form) {
         </tr>
         
 
-        <tr valign="top">
+        <tr>
             <td align="center" colspan="2"><input id="_submit" name="_submit" type="submit" value="Submit" /></td>
         </tr>
     </table>

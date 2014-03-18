@@ -78,6 +78,8 @@
                 <td>[% FOREACH dau IN row.D.keys.sort %]
                   <a href="[% row.D.$dau %]">[% dau %]</a>
                 [% END %]</td>
+              [% ELSIF key == 'Accession_NO' %]
+                <td><a href="[% row.ahref %]">[% row.Accession_NO %]</a></td>
               [% ELSIF key == 'Map' %]
                 <td>
                     [% IF row.Map %]

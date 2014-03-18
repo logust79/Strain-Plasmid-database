@@ -75,6 +75,8 @@
             
               [% ELSIF key == 'Parent' %]
                 <td><a href="[% row.phref %]">[% row.Parent %]</a></td>
+              [% ELSIF key == 'Accession_NO' %]
+                <td><a href="[% row.ahref %]">[% row.Accession_NO %]</a></td>
               [% ELSIF key == 'Daughters' %]
                 <td>[% FOREACH dau IN row.D.keys.sort %]
                     <a href="[% row.D.$dau %]">[% dau %]</a>

@@ -52,40 +52,32 @@
     
         </td>
         <td></td>
+        
+      </tr>
+
+      <tr>
+        <td>Temperature</td>
+        <td><input id="Temperature" name="Temperature" type="text" value="[% entries.Temperature %]" /></td>
         <td>Other names</td>
         <td><input name="Other_names" type="text" value="[% entries.Other_names %]" /></td>
       </tr>
-
-      <tr valign="top">
-        <td>Temperature</td>
-        <td><input id="Temperature" name="Temperature" type="text" value="[% entries.Temperature %]" /></td>
+      <tr>
+        <td>Accession number</td>
+        <td><input id="Accession_NO" name="Accession_NO" type="text" value="[% entries.Accession_NO %]" /></td>
         <td>Copy Number</td>
         <td><input id="Copy_number" name="Copy_number" type="text" value="[% entries.Copy_number %]" /></td>
-      </tr>
-      <tr valign="top">
-        <td>Size</td>
-        <td><input id="Size" name="Size" type="text" value="[% entries.Size %]" /></td>
-        <td>Blue White</td>
-        [% IF entries.Blue_white == "yes" %]
-    
-          <td><input id="Blue_white" name="Blue_white" type="radio" value="no">no
-          <input id="Blue_white" name="Blue_white" type="radio" value="yes" checked="checked">yes
-            </td>
-        [% ELSE %]
-          <td><input id="Blue_white" name="Blue_white" type="radio" value="no" checked="checked">no
-          <input id="Blue_white" name="Blue_white" type="radio" value="yes">yes
-            </td>
-        [% END %]
       </tr>
       <tr>
         <td><br></td>
       </tr>
 
-      <tr valign="top">
+      <tr>
         <td>Constructor</td>
         <td><input id="Constructor" name="Constructor" type="text" value="[% entries.Constructor %]" /></td>
         <td>Keeper</td>
         <td><input id="Keeper" name="Keeper" type="text" value="[% entries.Keeper %]" /></td>
+      </tr>
+      <tr>
         <td>Location</td>
         <td><input id="Location" name="Location" type="text" value="[% entries.Location %]" /></td>
         <td>Arrival Time</td>
@@ -94,23 +86,37 @@
       <tr>
         <td><br></td>
       </tr>
-      <tr valign="top">
-        <td>Parent</td>
-        <td><input id="Parent" name="Parent" type="text" value="[% entries.Parent %]" /></td>
+      <tr>
+          <td>Size</td>
+          <td><input id="Size" name="Size" type="text" value="[% entries.Size %]" /></td>
+        <td>Blue White</td>
+        [% IF entries.Blue_white == "yes" %]
+        
+        <td><input id="Blue_white" name="Blue_white" type="radio" value="no">no
+            <input id="Blue_white" name="Blue_white" type="radio" value="yes" checked="checked">yes
+                </td>
+        [% ELSE %]
+        <td><input id="Blue_white" name="Blue_white" type="radio" value="no" checked="checked">no
+            <input id="Blue_white" name="Blue_white" type="radio" value="yes">yes
+                </td>
+        [% END %]
       </tr>
-
+      <tr>
+          <td>Parent</td>
+          <td><input id="Parent" name="Parent" type="text" value="[% entries.Parent %]" /></td>
+      </tr>
 
       <tr>
         <td><br></td>
       </tr>
 
 
-      <tr valign="top">
+      <tr>
         <td>Genotype </td>
 
         <td><textarea id="Genotype" name="Genotype" form="plasmid_edit">[% entries.Genotype %]</textarea></td>
       </tr>
-      <tr valign="top">
+      <tr>
         <td>Resistance</td>
         <td><textarea id="Resistance" name="Resistance" form="plasmid_edit">[% entries.Resistance %]</textarea></td>
       </tr>
@@ -119,23 +125,23 @@
         <td><br></td>
       </tr>
 
-      <tr valign="top">
+      <tr>
         <td>Reference</td>
         <td><textarea id="Reference" name="Reference" form="plasmid_edit">[% entries.Reference %]</textarea></td>
       </tr>
-      <tr valign="top">
+      <tr>
         <td>Construction</td>
         <td><textarea id="Construction" name="Construction" form="plasmid_edit">[% entries.Construction %]</textarea></td>
       </tr>
-      <tr valign="top">
+      <tr>
         <td>Comments</td>
         <td><textarea id="Comments" name="Comments" form="plasmid_edit">[% entries.Comments %]</textarea></td>
       </tr>
-      <tr valign="top">
+      <tr>
         <td>Plasmid map</td>
         <td><input type="file" name="map"></td>
       </tr>
-      <tr valign="top">
+      <tr>
         <td>Sequence</td>
         <td><textarea id="Sequence" name="Sequence" form="plasmid_edit">[% entries.Sequence %]</textarea></td>
       </tr>

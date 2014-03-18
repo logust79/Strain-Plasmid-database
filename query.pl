@@ -28,7 +28,7 @@ set 'environment'  => 'development';
 
 
 
-my ($requested_path);
+
 
 ####### The beginning of all the subs.... #############
 
@@ -38,7 +38,10 @@ sub get_plasmid_list {
     my %tokens = @_;
     my @test;
     
-    if ($tokens{user}){
+    if ($tokens{obsolete}){
+        # From /obsolete
+        @test = database->quick_select('Plasmid',{Obsolete => 1});
+    }elsif ($tokens{user}){
         
         # Coming from /myPlasmid
         @test = database->quick_select('Plasmid',{Keeper => $tokens{user}, Obsolete => 0});
@@ -73,6 +76,10 @@ sub get_plasmid_list {
             $row->{phref} = uri_for("/plasmid/$pID");
         }
         
+        if ($row->{Accession_NO}){
+            $row->{ahref} = 'http://www.ncbi.nlm.nih.gov/nuccore/'.$row->{Accession_NO};
+        }
+        
         if ($row->{Map}){
             $row->{Map} = uri_for("/plasmid/$ID/map");
         }
@@ -96,25 +103,9 @@ sub get_plasmid_list {
                 $row->{D}->{$d} = uri_for("/plasmid/$dau_id");
             }
         }
-    }
-    return @test;
-}
-
-sub get_plasmid_obsolete_list {
-    
-    #This is the junk yard
-    my @test = database->quick_select('Plasmid',{Obsolete => 1});
-
-    for my $row (@test){
-        my $ID = $row->{ID};
-        $row->{href} = uri_for("/plasmid/$ID");
-        $row->{Resistance} = join ' ',Biolab::Antibiotic->abbreviate($row->{Resistance});
-        $row->{Keeper} = ucfirst $row->{Keeper};
-        
-        if ($row->{Parent}){
-            my $parent = database->quick_select('Plasmid',{Name => $row->{Parent}});
-            my $pID = $parent->{ID} || 0;
-            $row->{phref} = uri_for("/plasmid/$pID");
+        # Turn new line into <br>
+        if ($row->{Comments}){
+            $row->{Comments} =~ s/\n/<br>/;
         }
     }
     return @test;
@@ -127,8 +118,11 @@ sub get_strain_list {
     
     my %tokens = @_;
     my @test;
-    
-    if ($tokens{user}){
+    if ($tokens{obsolete}){
+        # From /obsolete
+        @test = database->quick_select('Strain',{Obsolete => 1});
+        
+    }elsif ($tokens{user}){
         
         # From /myStrain
         @test = database->quick_select('Strain',{Keeper => $tokens{user}, Obsolete => 0});
@@ -163,6 +157,10 @@ sub get_strain_list {
             my $pID = $parent->{ID} || 0;
             $row->{phref} = uri_for("/strain/$pID");
         }
+        if ($row->{Accession_NO}){
+            $row->{ahref} = 'http://www.ncbi.nlm.nih.gov/nuccore/'.$row->{Accession_NO};
+        }
+        
         # Parse plasmids
         
         if ($row->{Plasmids}){
@@ -190,37 +188,6 @@ sub get_strain_list {
     }
     return @test;
     
-}
-
-sub get_strain_obsolete_list {
-    
-    # This is the junk yard
-    my @test = database->quick_select('Strain',{Obsolete => 1});
-    for my $row (@test){
-        my $ID = $row->{ID};
-        $row->{href} = uri_for("/strain/$ID");
-        $row->{Resistance} = join ' ',Biolab::Antibiotic->abbreviate($row->{Resistance});
-        $row->{Keeper} = ucfirst $row->{Keeper};
-        $row->{Species} = Biolab::Species->abbreviate($row->{Species});
-        
-        if ($row->{Parent}){
-            my $parent = database->quick_select('Strain',{Name => $row->{Parent}});
-            my $pID = $parent->{ID} || 0;
-            $row->{phref} = uri_for("/strain/$pID");
-        }
-        # Parse plasmids
-        
-        if ($row->{Plasmids}){
-            for my $p (split ' ', $row->{Plasmids}){
-                my $p_record = database->quick_select('Plasmid', {Name => $p});
-                my $pID = $p_record->{ID} || 0;
-                $row->{p}{$p} = uri_for("/plasmid/$pID");
-            }
-            
-        }
-    }
-    return @test;
-
 }
 
 sub get_max_id {
@@ -547,13 +514,15 @@ any ['get', 'post'] => '/login' => sub {
             session 'logged_in' => true;
             session user => $name;
             session 'start' => time;
-            redirect (params->{path}) || '/';
+            my $path = params->{path};
+            params->{path} = '/';
+            redirect $path || '/';
         }
     }
     # display login form
     template 'login.tt', {
         err => $err,
-        path => $requested_path,
+        path => session 'requested_path',
     };
 };
 
@@ -566,16 +535,15 @@ get '/logout' => sub {
 
 
 # Add users. Enable it when needed.
-=cut
+=disable
 any ['get', 'post'] => '/add_user' => sub {
     my $err;
     if ( request->method() eq "POST" ) {
-        my $dbh = connect_db();
+        
         my $name = params->{'username'};
         my $user = Biolab::UserChecker->new (
             name => $name,
             password => params->{'password'},
-            dbh => $dbh,
         ) or die "Can't connect to database:$!";
         
         if ($user->exist){
@@ -584,7 +552,6 @@ any ['get', 'post'] => '/add_user' => sub {
         
         elsif ($user->name && $user->password){
             $user->add_user;
-            $dbh->disconnect;
             
             return redirect '/';
         }
@@ -636,6 +603,7 @@ get qr{/([\d]+)} => sub {
     
     my $map = uri_for("/plasmid/$ID/map");
     my $seq = uri_for("/plasmid/$ID/sequence");
+    my $acc_url = 'http://www.ncbi.nlm.nih.gov/nuccore/'.$record->{Accession_NO};
     $record->{phref} = uri_for("/plasmid/$pID");
     
     # Parse Carriers
@@ -684,6 +652,7 @@ get qr{/([\d]+)} => sub {
         'genotype' => $genotype,
         'carriers' => \%strains,
         'daughters' => \%daughters,
+        'acc_url' => $acc_url,
         'map' => $map,
         'tree' => uri_for("/tree/p_$ID"),
         "sequence" => $seq,
@@ -772,7 +741,7 @@ post '/:id/edited' => sub {
     if ( not session 'logged_in' ) {
         
         # Just in case...
-        $requested_path = uri_for("/plasmid/$ID");
+        session 'requested_path' => uri_for("/plasmid/$ID");
         return redirect uri_for('/login');
     }
 
@@ -804,6 +773,7 @@ post '/:id/edited' => sub {
     database->quick_update('Plasmid', {ID => $ID},
     {
         Other_names => $other_names,
+        Accession_NO => (uc param "Accession_NO"),
         Temperature => (param "Temperature"),
         Obsolete => (param "Obsolete"),
         Copy_number => (lc param "Copy_number"),
@@ -838,7 +808,7 @@ any ['get','post'] => '/add' => sub {
     # Do a login check
     if ( not session 'logged_in' ) {
 
-        $requested_path = uri_for('/plasmid/add');
+        session 'requested_path' => uri_for('/plasmid/add');
         return redirect uri_for ('/login');
     }
     if ( request->method() eq "POST" ) {
@@ -846,7 +816,7 @@ any ['get','post'] => '/add' => sub {
         
         # Let's do a login check one more time.
         if ( not session 'logged_in' ) {
-            $requested_path = uri_for('/plasmid/add');
+            session 'requested_path' => uri_for('/plasmid/add');
             return redirect uri_for ('/login');
         }
         my $ID = param "ID";
@@ -894,6 +864,7 @@ any ['get','post'] => '/add' => sub {
         {
             Name => (param "Plasmid_Name"),
             Other_names => $other_names,
+            Accession_NO => (param "Accession_NO"),
             Temperature => (param "Temperature"),
             Obsolete => (param "Obsolete"),
             Copy_number => (lc param "Copy_number"),
@@ -992,14 +963,14 @@ any ['get','post'] => '/custom_list' => sub {
     
     # Do some log status check.
     if ( not session 'logged_in' ) {
-        $requested_path = uri_for('/plasmid/add');
+        session 'requested_path' => uri_for('/plasmid/add');
         return redirect uri_for ('/login');
     }
     if ( request->method() eq "POST" ) {
         
         # Do again log status check.
         if ( not session 'logged_in' ) {
-            $requested_path = uri_for('/plasmid/add');
+            session 'requested_path' => uri_for('/plasmid/add');
             return redirect uri_for ('/login');
         }
         
@@ -1117,7 +1088,7 @@ get '/obsolete' => sub {
     my $display_fields = database->quick_lookup('users', {name => session 'user'}, 'p_list');
     my @display_fields = $display_fields ? split ',', $display_fields : @defaults;
 
-    my @test = get_plasmid_obsolete_list();
+    my @test = get_plasmid_list('obsolete' => 1);
     template 'plasmid_list.tt', {
         "entries" => \@test,
         "display" => \@display_fields,
@@ -1129,17 +1100,17 @@ any ['get','post'] => '/mass_add' => sub {
     
     # Do some log status check.
     if ( not session 'logged_in' ) {
-        $requested_path = uri_for('/plasmid/mass_add');
+        session 'requested_path' => uri_for('/plasmid/mass_add');
         return redirect uri_for ('/login');
     }
     
     # Define fields
-    my @fields = qw/ Name Other_names Resistance Parent Size Copy_number Genotype Temperature Blue_white Keeper Arrival_time Constructor Construction Location Reference Comments Sequence/;
+    my @fields = qw/ Name Other_names Accession_NO Resistance Parent Size Copy_number Genotype Temperature Blue_white Keeper Arrival_time Constructor Construction Location Reference Comments Sequence/;
     
     if ( request->method() eq "POST" ) {
         # Check again log status.
         if ( not session 'logged_in' ) {
-            $requested_path = uri_for('/plasmid/mass_add');
+            session 'requested_path' => uri_for('/plasmid/mass_add');
             return redirect uri_for ('/login');
         }
         
@@ -1451,6 +1422,7 @@ post '/:id/edited' => sub {
     database->quick_update('Strain', {ID => $ID},
     {
         Other_names => $other_names,
+        Accession_NO => (param "Accession_NO"),
         Temperature => (param "Temperature"),
         Obsolete => (param "Obsolete"),
         Constructor => (param "Constructor"),
@@ -1491,7 +1463,7 @@ any ['get','post'] => '/add' => sub {
     
     # Checking log in status
     if ( not session 'logged_in' ) {
-        $requested_path = uri_for('/strain/add');
+        session 'requested_path' => uri_for('/strain/add');
         return redirect uri_for ('/login');
     }
     if ( request->method() eq "POST" ) {
@@ -1499,7 +1471,7 @@ any ['get','post'] => '/add' => sub {
         
         # Let's check log status again
         if ( not session 'logged_in' ) {
-            $requested_path = uri_for('/strain/add');
+            session 'requested_path' => uri_for('/strain/add');
             return redirect uri_for ('/login');
         }
         my $ID = param "ID";
@@ -1583,6 +1555,7 @@ any ['get','post'] => '/add' => sub {
             ID => $ID,
             Name => (param "Strain_Name"),
             Other_names => $other_names,
+            Accession_NO => (param "Accession_NO"),
             Isolated_from => (param "Isolated_from"),
             Geographic_location => (param "Geographic_location"),
             Temperature => (param "Temperature"),
@@ -1699,14 +1672,14 @@ any ['get','post'] => '/custom_list' => sub {
     
     # Do some log status check.
     if ( not session 'logged_in' ) {
-        $requested_path = uri_for('/strain/custom_list');
+        session 'requested_path' => uri_for('/strain/custom_list');
         return redirect uri_for ('/login');
     }
     if ( request->method() eq "POST" ) {
 
         # Do again log status check.
         if ( not session 'logged_in' ) {
-            $requested_path = uri_for('/strain/custom_list');
+            session 'requested_path' => uri_for('/strain/custom_list');
             return redirect uri_for ('/login');
         }
         
@@ -1724,7 +1697,8 @@ any ['get','post'] => '/custom_list' => sub {
         # Note that ID and Strain_Name should always be displayed.
         # Getting user's current preference, if there's one. Else, use defaults
         my @defaults = qw/ Species Plasmids Resistance Keeper Location Parent/;
-        my @display_fields = (split ',', database->quick_lookup('users', {name => session 'user'}, 's_list')) || @defaults;
+        my $display_fields = database->quick_lookup('users', {name => session 'user'}, 's_list');
+        my @display_fields = $display_fields? split ',', $display_fields : @defaults;
         
         # Getting all fields
         my @all = sort keys %{database->quick_select('Strain',{ID => 1})};
@@ -1828,7 +1802,7 @@ get '/obsolete' => sub {
     my $display_fields = database->quick_lookup('users', {name => session 'user'}, 's_list');
     my @display_fields = $display_fields ? split ',', $display_fields : @defaults;
     
-    my @test = get_strain_obsolete_list();
+    my @test = get_strain_list('obsolete' => 1);
     template 'strain_list.tt', {
         "entries" => \@test,
         "display" => \@display_fields,
@@ -1840,17 +1814,17 @@ any ['get','post'] => '/mass_add' => sub {
     
     # Do some log status check.
     if ( not session 'logged_in' ) {
-        $requested_path = uri_for('/strain/mass_add');
+        session 'requested_path' => uri_for('/strain/mass_add');
         return redirect uri_for('/login');
     }
     
     # These are all the fields to display on the page
-    my @fields = qw/ Name Other_names Isolated_from Geographic_location Species Parent Plasmids Genotype Resistance Temperature Keeper Arrival_time Constructor Construction Location Reference Comments Sequence/;
+    my @fields = qw/ Name Other_names Accession_NO Isolated_from Geographic_location Species Parent Plasmids Genotype Resistance Temperature Keeper Arrival_time Constructor Construction Location Reference Comments Sequence/;
     
     if ( request->method() eq "POST" ) {
         # Check again log status.
         if ( not session 'logged_in' ) {
-            $requested_path = uri_for('/strain/mass_add');
+            session 'requested_path' => uri_for('/strain/mass_add');
             return redirect uri_for('/login');
         }
         
@@ -2069,7 +2043,7 @@ any ['get','post'] => '/mass_edit' => sub {
     
     # Check log in status
     if ( not session 'logged_in' ) {
-        $requested_path = uri_for('/mass_edit');
+        session 'requested_path' => uri_for('/mass_edit');
         return redirect uri_for('/login');
     }
     
@@ -2081,7 +2055,7 @@ any ['get','post'] => '/mass_edit' => sub {
         
         # Check log in status again
         if ( not session 'logged_in' ) {
-            $requested_path = uri_for('/mass_edit');
+            session 'requested_path' => uri_for('/mass_edit');
             return redirect uri_for('/login');
         }
         
@@ -2212,7 +2186,7 @@ any ['get','post'] => '/change_keeper' => sub {
     
     # Check if logged in..
     if ( not session 'logged_in' ) {
-        $requested_path = uri_for('/change_keeper');
+        session 'requested_path' => uri_for('/change_keeper');
         return redirect uri_for('/login');
     }
     
@@ -2222,7 +2196,7 @@ any ['get','post'] => '/change_keeper' => sub {
         
         # Check log in status again...
         if ( not session 'logged_in' ) {
-            $requested_path = uri_for('/change_keeper');
+            session 'requested_path' => uri_for('/change_keeper');
             return redirect uri_for('/login');
         }
         

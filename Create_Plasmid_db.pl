@@ -6,7 +6,7 @@ use DBI;
 
 
 
-my ($dbname, $user, $pwd) = qw/CFSlab Jing thethe/;
+my ($dbname, $user, $pwd) = qw/CFSlab username password/;
 my $dbh = DBI->connect(
 "dbi:mysql:dbname=$dbname",
 "$user",
@@ -19,6 +19,7 @@ $dbh->do("CREATE TABLE Plasmid(
 ID INT PRIMARY KEY AUTO_INCREMENT,
 Name CHAR(20) UNIQUE,
 Other_names TEXT,
+Accession_NO CHAR(15),
 Resistance TEXT,
 Carriers TEXT,
 Size INT(10),
