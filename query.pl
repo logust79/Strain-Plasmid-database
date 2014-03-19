@@ -2205,7 +2205,7 @@ any ['get','post'] => '/change_keeper' => sub {
         my $return = uri_for ('/change_keeper');
         
         my $current_keeper = session 'user';
-        my $new_keeper = param "New_keeper";
+        my $new_keeper = lc param "New_keeper";
         
         # Check if new keeper is already one of our users...
         
