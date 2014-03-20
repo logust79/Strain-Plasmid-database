@@ -1,59 +1,42 @@
 #Strain and Plasmid Database
-• This application is based on MySQL and Perl Dancer2. You might need to install several modules for this to work, such as Dancer2 and Template Toolkit.
 
-• Once you’ve set up everything, run ‘query.pl’ to initiate the application.
+##Introduction
 
-• All the databases in this example are stored in ‘CFSlab’ schema. User name and password are ‘username’ and ‘password’, respectively. These can be configured via config.yml.
+In a multiplayer lab, material sharing is common. Especcially for a biology lab, people use common resources, such as bacterial strains, plasmids and primers all the time. When people tend to keep their own records of srains/plasmids/primers on an Excel sheet, it can get a bit tricky for one to use something that belongs to others. 
+A worse senario? When I came to this lab, I had to carry over some work left by a leaving PhD. She had several boxes collection of strains, and I knew nothing about them... Handing over materials was such a pain in ... somewhere.
 
-• The website uses 3000 as its port. So if you are testing it from the server computer, type “localhost:3000”.
+And that's when I decided to build up a Strain/Plasmid/Primer database to centralise every valuable materials in the lab (Primer's not available at the moment, but it will get there at some point).
 
-• You may use ‘Create_Plasmid_db.pl’ to create the Plasmid database, and ‘Create_Strain_db.pl’ for the Strain database. You can use this script to create a ‘users’ database:
-	CREATE TABLE 'users' ( 'ID' int(11) NOT NULL AUTO_INCREMENT, 'name' varchar(255) 	DEFAULT NULL,  'password' mediumtext NOT NULL, 'roles' CHAR(10) DEFAULT 'guest', 	'p_list' TEXT, 's_list' TEXT, PRIMARY KEY ('ID') ) ENGINE=MyISAM
-Note that p_list contains information for user_customised plasmid list displaying fields, and s_list contains the one for strain list displaying fields.
+##How to set up
 
+This application is based on MySQL (as the actual database) and Perl Dancer2 (as the web query interface). You might need to install several modules for this to work, such as Dancer2 and Template Toolkit. As for this writing, I tested it under Mac Mavericks (10.9.2). But it should work under Linux or Windows systems as well.
 
-• login status will stay for 1 hour (session expire didn’t work for me, so I have to ‘manually’ destroy sessions. Any advice and help is welcome!)
+### Install Perl
+* Linux and Mac users should already have Perl. However, this app uses some new features of Perl not available to old versions of Perl. You might need to upgrade it to at least v5.16.0. I use Perlbrew for upgrading Perl under Mac or Linux.
 
-• “myPlasmids” and “myStrains” are the entries with Keeper field matching to your login username.
+* Windows users can use Active Perl or Strawberry Perl.
 
-• When you try to add an entry, it will automatically assign a CFS (I’m in this lab, so…) number to the new entry.
+### Install relevant Perl modules
+* I'm sorry I couldn't list all the modules you need to install before you can run the Perl app. But you can get a clue by just running 'query.pl'. Although it will fail, it will tell you what modules are missing at the same time. You can install them one by one.
 
-• Antibiotic and species abbreviations can be configured through Antibiotic.yml and Species.yml. Note: try to avoid abbreviation name collapse. 
+* Under Linux, Windows and Mac, you can install `cpanm`, and then use `cpanm` for module installation:
+    $cpan App::cpanminus
+    $cpanm Dancer2
+    $...
+Note, you might need `sudo` to do this.
 
-• Entries cannot be deleted, but can be marked as obsolete (by clicking “sabotage”). Once it is obsolete, the entry won’t appear in the search result. However, you cannot recycle the CFS ID for another plasmid/strain entry, and you cannot add an entry with the same plasmid/strain’s name. Due to the same reason, you cannot change the plasmid/strain’s name once it is in the database. Put it in another word, CFS ID is permanently bound to its plasmid/strain’s name once it is set! If something’s wrong with it? Ask the database’s admin. 
-Note: it is always good to give your reasons in the “comments” field when you decide to “sabotage” the entry.
+* At least under Mac, after I upgraded to Mavericks, I had some problems when installing modules that require XS. If this happens, reinstall Xcode. That fixed my problem.
 
-• It is currently possible to “revive” an entry. But I am considering to deprecate this function.
+## Install MySQL
+* I don't know how to install MySQL under Linux, but it should be straight forward under Linux and Windows. In Mac, however, I had to use Homebrew to do it. Install Homebew in Mac if necessary.
 
-• It can remember the case of your input. But the search is case insensitive, which is convenient. Also, if you have a record named pET22b, and you try to add another one called pet22B, it won’t allow you to do so.
+## Create a schema in MySQL
+* In my example, I created a schema call 'CFSlab'. You can create your own schema, but then don't forget to change the corresponding field in ./config.yml. When you set up new username and password, you have to change the corresponding field in ./config.yml, too. And you also need to make changes in 'Create_xx_db.pl' scripts.
+* You can then use the scripts 'Create_Plasmid_db.pl' and 'Create_Strain_db.pl' to create the two tables. You can add fields in them, but I don't recommend to remove any fields from them. Some algarithms rely on many of the fields being present. But then, if you want to add fields in the tables, you have to change a lot of things in the query.pl script and those '.tt' files in the 'views' folder. Quite a pain.
 
-• Plasmid’s carriers are not editable. The field is usually modified by the changes in the strain database. Deleting or adding a plasmid in the Strain database will change the corresponding field in the Plasmid database.
+## Running the app
+* Now you are ready to go, simply by running 'query.pl'. Don't forget you are using the 3000 port as Dancer2's default setting. You can query the database from anywhere in the local network by visiting the server's internal ip address.
 
-• If you try to add a plasmid into a strain entry, and that plasmid is not already in the Plasmid database, you will fail. Try to add the plasmid in the database first before you do this please.
+* Oh, you can't log in? Don't be surprised... Because there's no user yet. First, run 'Create_user_db.pl', and then enable the '/add_user' handler in the 'query.pl' script by deleting '=disable' and '=cut' at the beginning and end of the handler, respectively. Now you can visit 'localhost:3000/add_user' to add users. Don't forget to change 'username' and 'password' in the 'Create_user_db.pl' according to your database's settings.
 
-• When you add an entry, and it has a parent (parent must be already in the database for you to do so), you can type it in. Once you’ve done this, some of the fields will be pre-filled to ease your pain of form-panicking.
-
-• Strain’s species info has to match with the species info of its parent. Otherwise any modification will fail miserably. 
-
-• It provides mass edit, like when a paper is published and then change the ref field of a group of plasmids/strains.
-
-• It allows owner transfer. Change owners will push previous one into the “previous owner” field, delimited with a pipe ‘|’. It also adds the time when this change happens. 
-
-• Daughter field is not changeable, can only get updated from daughter’s parent field (same as carrier-plasmid logic). 
-
-• It provides family tree for plasmids and strains, with construction info shown when hovering mouse over node.
-
-• It provides garbage ground where all obsolete records are pooled. This can be secretly accessed via ‘/plasmid/obsolete’ for plasmid dumps and ‘/strain/obsolete’ for strain dumps.
-
-• You can mass search with ID or names.
-
-• Change species of a root parent will change the species field of all its offspring. In fact, this is the only way to change any daughter’s species field.
-
-• It can export list to excel sheet.
-
-• Customise fields to display on the list. p_list and s_list are stored in the user database, delimited by ‘,’.
-
-• You can add plasmid/strain records in batch.
-
-• Any help and advice are welcome! 
 
