@@ -80,7 +80,7 @@
               <td>
                   [% IF carriers.size %]
                   [% FOREACH key IN carriers.keys %]
-                  <a href="[% carriers.$key %]">[% key %]</a>
+                  <a href="[% carriers.$key %]">[% key %]</a>&nbsp;&nbsp;&nbsp;
                   [% END %]
                   [% ELSE %]
                   &nbsp;
