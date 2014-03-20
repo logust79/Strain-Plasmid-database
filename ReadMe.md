@@ -20,9 +20,13 @@ This application is based on MySQL (as the actual database) and Perl Dancer2 (as
 * I'm sorry I couldn't list all the modules you need to install before you can run the Perl app. But you can get a clue by just running 'query.pl'. Although it will fail, it will tell you what modules are missing at the same time. You can install them one by one.
 
 * Under Linux, Windows and Mac, you can install `cpanm`, and then use `cpanm` for module installation:
+    
     `$cpan App::cpanminus`
+    
     `$cpanm Dancer2`
+    
     `$...`
+
 Note, you might need `sudo` to do this.
 
 * At least under Mac, after I upgraded to Mavericks, I had some problems when installing modules that require XS. If this happens, reinstall Xcode. That fixed my problem.
