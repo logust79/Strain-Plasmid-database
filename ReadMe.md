@@ -38,5 +38,6 @@ Note, you might need `sudo` to do this.
 * Now you are ready to go, simply by running 'query.pl'. Don't forget you are using the 3000 port as Dancer2's default setting. You can query the database from anywhere in the local network by visiting the server's internal ip address.
 
 * Oh, you can't log in? Don't be surprised... Because there's no user yet. First, run 'Create_user_db.pl', and then enable the '/add_user' handler in the 'query.pl' script by deleting '=disable' and '=cut' at the beginning and end of the handler, respectively. Now you can visit 'localhost:3000/add_user' to add users. Don't forget to change 'username' and 'password' in the 'Create_user_db.pl' according to your database's settings.
+* If you want to grant some users with administrator privilege, for the time being, you have to manually change the 'roles' of the user in the 'users' table, from 'guest' to 'admin'. Now the user can edit any entry in the database.
 
 

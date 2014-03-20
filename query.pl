@@ -632,8 +632,11 @@ get qr{/([\d]+)} => sub {
     # Checking if record keeper is the logged in user.
     # If yes, shows the edit button.
     
-    my $allowed = (((session 'user') eq $record->{Keeper})
-                or ((session 'user') eq 'logust'))
+    my $user = session 'user';
+    my $role = database->quick_lookup('users',{name => $user}, 'roles');
+    
+    my $allowed = (($user eq $record->{Keeper})
+    or ($role eq 'admin'))
                 ? 1
                 : 0;
     
@@ -1290,8 +1293,11 @@ get qr{/([\d]+)} => sub {
     # Checking if record keeper is the logged in user.
     # If yes, show 'edit' button
     
-    my $allowed = (((session 'user') eq $record->{Keeper})
-    or ((session 'user') eq 'logust'))
+    my $user = session 'user';
+    my $role = database->quick_lookup('users',{name => $user}, 'roles');
+    
+    my $allowed = (($user eq $record->{Keeper})
+    or ($role eq 'admin'))
     ? 1
     : 0;
     
