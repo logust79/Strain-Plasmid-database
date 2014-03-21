@@ -8,15 +8,17 @@
 
 <body class="plasmid">
   <p>
-    <a href="[% home %]"><font color="#04B4AE">Home</font></a>&nbsp;&nbsp;&nbsp;
-    <a href="[% plasmid %]"><font color="#04B4AE">All plasmids</font></a>
-    <a href="[% my_plasmids %]"><font color="#04B4AE">myPlasmids</font></a>
-    <a href="[% plasmid_search %]"><font color="#04B4AE">Search</font></a>
-    <a href="[% plasmid_add %]"><font color="#04B4AE">Add</font></a>&nbsp;&nbsp;&nbsp;
+    <a id="tree" href="[% home %]"><font color="#04B4AE">Home</font></a>&nbsp;&nbsp;&nbsp;
+    <a id="tree" href="[% plasmid %]"><font color="#04B4AE">All plasmids</font></a>
+    <a id="tree" href="[% my_plasmids %]"><font color="#04B4AE">myPlasmids</font></a>
+    <a id="tree" href="[% plasmid_search %]"><font color="#04B4AE">Search</font></a>
     [% IF session.logged_in %]
-      <a href="[% logout_url %]"><font color="#8A4B08">log out</font></a>
+      <a id="tree" href="[% plasmid_add %]"><font color="#04B4AE">Add</font></a>
+      <a id="tree" href="[% p_mass_add %]"><font color="#04B4AE">Add in batch</font></a>
+          &nbsp;&nbsp;&nbsp;
+      <a id="tree" href="[% logout_url %]"><font color="#8A4B08">log out</font></a>
     [% ELSE %]
-      <a href="[% login_url %]"><font color="#8A4B08">login</font></a>
+      <a id="tree" href="[% login_url %]"><font color="#8A4B08">login</font></a>
     [% END %]
     
     [% IF allowed %]

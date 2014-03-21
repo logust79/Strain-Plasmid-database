@@ -11,6 +11,7 @@ use Biolab::UserChecker;
 use Data::Dumper;
 use Biolab::Antibiotic;
 use Biolab::Species;
+use Biolab::RestrictionEnzyme;
 use DateTime;
 use Dancer2::Plugin::Database;
 use Dancer::Logger qw(debug);
@@ -212,6 +213,10 @@ sub check_parent {
     
     my $err;
     my $par_name;
+    
+    # Parent deleted..
+    return 0 unless $tokens{parent};
+    
     if ($tokens{type} eq 'Plasmid'){
         
         # Current record is a plasmid
@@ -446,6 +451,14 @@ sub update_daughter_species {
 }
 ####### The end of all the subs.... ##################
 
+hook before => sub{
+    # Setting expiry timer. In seconds.
+    if (session 'logged_in'){
+        my $now = time;
+        my $diff = $now - session 'start';
+        context->destroy_session if $diff > 3600;
+    }
+};
 
 hook before_template => sub {
     
@@ -470,13 +483,8 @@ hook before_template => sub {
     $tokens->{'mass_search'} = uri_for('/mass_search');
     $tokens->{'p_custom'} = uri_for('/plasmid/custom_list');
     $tokens->{'s_custom'} = uri_for('/strain/custom_list');
-    
-    # Setting expiry timer. In seconds.
-    if (session 'logged_in'){
-        my $now = time;
-        my $diff = $now - session 'start';
-        context->destroy_session if $diff > 3600;
-    }
+    $tokens->{'p_mass_add'} = uri_for('/plasmid/mass_add');
+    $tokens->{'s_mass_add'} = uri_for('/strain/mass_add');
     
 };
 
@@ -755,7 +763,7 @@ post '/:id/edited' => sub {
     my $par_name;
     
     # Checking if parent plasmid exists and do some updates
-    if (param "Parent"){
+    if ((param "Parent") ne $record->{Parent}){
         my $argu = {parent => (param "Parent"), name => $name, type => 'Plasmid', id => $ID};
         my $err;
         ($err,$par_name) = check_parent($argu);
@@ -1306,7 +1314,7 @@ get qr{/([\d]+)} => sub {
     $record->{Constructor} = ucfirst $record->{Constructor};
     $record->{Recorder} = ucfirst $record->{Recorder};
     $record->{Comments} =~ s/\n/<br>/g;
-    $acc_url = 'http://www.ncbi.nlm.nih.gov/nuccore/'.$record->{Accession_NO};
+    my $acc_url = 'http://www.ncbi.nlm.nih.gov/nuccore/'.$record->{Accession_NO};
     
     # Show the record
     template 'show_strain.tt', {
@@ -2039,7 +2047,28 @@ any ['get','post'] => '/mass_add' => sub {
 
 
 ############# End of strain    #################
+############# Start of primer  $$$$$$$$$$$$$$$$$
 
+prefix '/primer';
+
+get qr{/([\d]+)} => sub {
+    # This is to display a single primer record
+    
+    # Getting the record
+    my $ID = splat;
+    my $record = database->quick_select('Primer',{ID => $ID});
+    return 'Record does not exist!' unless $record;
+    
+    # Formatting human names
+    $record->{Designer} = ucfirst $record->{Designer};
+    $record->{Keeper} = ucfirst $record->{Keeper};
+    $record->{Recorder} = ucfirst $record->{Recorder};
+    
+    # Group paired_with, target and size together
+    
+};
+
+############ End of primer #####################
 ############ Start of everything else ##########
 
 
@@ -2306,7 +2335,7 @@ any ['get','post'] => '/mass_search' => sub {
             }
         }
         
-        my @plasmid_records = get_plasmid_list(%p_mass);
+        my @plasmid_records = get_plasmid_list(%p_mass) if %p_mass;
         # Getting strains
         my @strains = split ' ', param "strain";
         
@@ -2319,7 +2348,7 @@ any ['get','post'] => '/mass_search' => sub {
                 }
             }
         }
-        my @strain_records = get_strain_list(%s_mass);
+        my @strain_records = get_strain_list(%s_mass) if %s_mass;
         
 
         

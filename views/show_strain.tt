@@ -8,15 +8,16 @@
 
 <body class="strain">
   <p>
-    <a href="[% home %]"><font color="#3B170B">Home</font></a>&nbsp;&nbsp;&nbsp;
-    <a href="[% strain %]"><font color="#3B170B">All strains</font></a>
-    <a href="[% my_strains %]"><font color="#3B170B">myStrains</font></a>
-    <a href="[% strain_search %]"><font color="#3B170B">Search</font></a>
-    <a href="[% strain_add %]"><font color="#3B170B">Add</font></a>&nbsp;&nbsp;&nbsp;
+    <a id="tree" href="[% home %]"><font color="#3B170B">Home</font></a>&nbsp;&nbsp;&nbsp;
+    <a id="tree" href="[% strain %]"><font color="#3B170B">All strains</font></a>
+    <a id="tree" href="[% my_strains %]"><font color="#3B170B">myStrains</font></a>
+    <a id="tree" href="[% strain_search %]"><font color="#3B170B">Search</font></a>
     [% IF session.logged_in %]
-      <a href="[% logout_url %]"><font color="#8A4B08">log out</font></a>
+      <a id="tree" href="[% strain_add %]"><font color="#3B170B">Add</font></a>
+      <a id="tree" href="[% s_mass_add %]"><font color="#3B170B">Add in batch</font></a>&nbsp;&nbsp;&nbsp;
+      <a id="tree" href="[% logout_url %]"><font color="#8A4B08">log out</font></a>
     [% ELSE %]
-      <a href="[% login_url %]"><font color="#8A4B08">login</font></a>
+      <a id="tree" href="[% login_url %]"><font color="#8A4B08">login</font></a>
     [% END %]
     [% IF allowed %]
       <form action=[% entries.ID %]/edit method=post class=add-entry>

@@ -41,6 +41,7 @@
     <a id="tree" href="[% strain_add %]"><font color="#3B170B">Add</font></a>&nbsp;&nbsp;&nbsp;
     [% IF session.logged_in %]
         <a id="tree" href="[% s_custom %]"><font color="#3B170B">Customise your list</font></a>&nbsp;&nbsp;
+        <a id="tree" href="[% s_mass_add %]"><font color="#3B170B">Add in batch</font></a>&nbsp;&nbsp;
         <a id="tree" href="[% logout_url %]"><font color="#8A4B08">log out</font></a>
     [% ELSE %]
         <a id="tree" href="[% login_url %]"><font color="#8A4B08">login</font></a>

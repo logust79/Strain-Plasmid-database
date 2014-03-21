@@ -15,8 +15,8 @@
     <div id="left_column">
       <table>
         <tr valign="top">
-          <td><b>Fill <font color="brown">Plasmid</font> ID/names in this field</b></td>
-          <td><textarea id="mass_search" name="plasmid" form="mass_search"></textarea></td>
+          <td><b>Fill <font color="brown">Strain</font> ID/names in this field</b></td>
+          <td><textarea id="mass_search" name="strain" form="mass_search"></textarea></td>
         </tr>
       </table>
     </div>
@@ -24,8 +24,8 @@
     <div id="right_column">
       <table>
         <tr valign="top">
-          <td><b>Fill <font color="brown">Strain</font> ID/names in this field</b></td>
-          <td><textarea id="mass_search" name="strain" form="mass_search"></textarea></td>
+          <td><b>Fill <font color="brown">Plasmid</font> ID/names in this field</b></td>
+          <td><textarea id="mass_search" name="plasmid" form="mass_search"></textarea></td>
         </tr>
       </table>
     </div>
