@@ -2047,28 +2047,7 @@ any ['get','post'] => '/mass_add' => sub {
 
 
 ############# End of strain    #################
-############# Start of primer  $$$$$$$$$$$$$$$$$
 
-prefix '/primer';
-
-get qr{/([\d]+)} => sub {
-    # This is to display a single primer record
-    
-    # Getting the record
-    my $ID = splat;
-    my $record = database->quick_select('Primer',{ID => $ID});
-    return 'Record does not exist!' unless $record;
-    
-    # Formatting human names
-    $record->{Designer} = ucfirst $record->{Designer};
-    $record->{Keeper} = ucfirst $record->{Keeper};
-    $record->{Recorder} = ucfirst $record->{Recorder};
-    
-    # Group paired_with, target and size together
-    
-};
-
-############ End of primer #####################
 ############ Start of everything else ##########
 
 
