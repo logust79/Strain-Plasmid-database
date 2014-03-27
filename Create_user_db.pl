@@ -13,16 +13,14 @@ my $dbh = DBI->connect(
 "$pwd",
 {RaiseError => 1},
 ) or die $DBI::errstr;
-$dbh->do("DROP TABLE IF EXISTS Plasmid");
-$dbh->do("CREATE TABLE Plasmid(
-
-'ID' int(11) NOT NULL AUTO_INCREMENT,
-'name' varchar(255) 	DEFAULT NULL,
-'password' mediumtext NOT NULL,
+$dbh->do("DROP TABLE IF EXISTS users");
+$dbh->do("CREATE TABLE users(
+'ID' INT PRIMARY KEY AUTO_INCREMENT,
+'name' varchar(255) DEFAULT NULL,
+'password' MEDIUMTEXT NOT NULL,
 'roles' CHAR(10) DEFAULT 'guest',
 'p_list' TEXT,
-'s_list' TEXT,
-PRIMARY KEY ('ID')
+'s_list' TEXT
 )ENGINE=MyISAM"
 );
 

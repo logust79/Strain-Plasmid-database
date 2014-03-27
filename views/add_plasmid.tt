@@ -62,7 +62,7 @@ function validate (form) {
     var Parent_name = form.elements['Parent'].value;
     
     if (Plasmid_Name == null || ! Plasmid_Name.match(/^p\w+/)) {
-        alertstr += '- Invalid entry for the "Plasmid Name" field. It has to start with a <em>p</em>\n';
+        alertstr += '- Invalid entry for the "Plasmid Name" field. It has to start with a "p"\n';
         invalid++;
         invalid_fields.push('Plasmid_Name');
     }

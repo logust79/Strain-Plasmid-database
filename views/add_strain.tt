@@ -60,7 +60,7 @@ function validate (form) {
     var Strain_Name = form.elements['Strain_Name'].value;
     var Parent_name = form.elements['Parent'].value;
     
-    if (Strain_Name == null) {
+    if (!Strain_Name.match(/^\w+/)) {
         alertstr += '- Invalid entry for the "Strain Name" field\n';
         invalid++;
         invalid_fields.push('Strain_Name');
