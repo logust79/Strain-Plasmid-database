@@ -7,6 +7,9 @@ A worse senario? When I came to this lab, I had to carry over some work left by 
 
 And that's when I decided to build up a Strain/Plasmid/Primer database to centralise every valuable materials in the lab (Primer's not available at the moment, but it will get there at some point).
 
+For a preview of how the database looks like, please visit my EC2 server at:
+    54.72.44.191:3000. You may log in with username = 'guest' and password = 'password'.
+
 ##How to set up
 
 This application is based on MySQL (as the actual database) and Perl Dancer2 (as the web query interface). You might need to install several modules for this to work, such as Dancer2 and Template Toolkit. As for this writing, I tested it under Mac Mavericks (10.9.2). But it should work under Linux or Windows systems as well.
