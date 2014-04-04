@@ -858,7 +858,7 @@ any ['get','post'] => '/add' => sub {
         $arrival !~ /\d+/ and $arrival = DateTime->now->ymd('-');
         
         # Checking if parent plasmid exists
-        my $par_name;
+        my $par_name = param "Parent";
         if (param "Parent"){
             my $argu = {parent => (param "Parent"), name => $Plasmid_Name, type =>'Plasmid'};
             my $err;
