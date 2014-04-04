@@ -760,7 +760,7 @@ post '/:id/edited' => sub {
     my $name = $record->{Name};
     
     # $par_name is set to correct the case of parent name according to parent's entry's name
-    my $par_name;
+    my $par_name = param "Parent";
     
     # Checking if parent plasmid exists and do some updates
     if ((param "Parent") ne $record->{Parent}){
@@ -858,7 +858,7 @@ any ['get','post'] => '/add' => sub {
         $arrival !~ /\d+/ and $arrival = DateTime->now->ymd('-');
         
         # Checking if parent plasmid exists
-        my $par_name = param "Parent";
+        my $par_name;
         if (param "Parent"){
             my $argu = {parent => (param "Parent"), name => $Plasmid_Name, type =>'Plasmid'};
             my $err;
